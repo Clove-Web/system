@@ -51,6 +51,7 @@
     "@swc/core",
     "esbuild",
     "sharp",
-    "unrs-resolver"
+    "unrs-resolver",
+    "workerd"
   ]
 }
