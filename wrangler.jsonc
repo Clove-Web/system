@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "doughmination-system",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": [
+    // Required for Next.js server code to run on Workers.
+    "nodejs_compat",
+    // Makes fetch() in server code go over the public internet — needed so the
+    // [member_id] layout can call the Doughmination/PluralKit API.
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      // Must match "name" above.
+      "service": "doughmination-system"
+    }
+  ]
+  // To enable persistent Next.js data/ISR caching, create an R2 bucket and add
+  // an "r2_buckets" binding named NEXT_INC_CACHE_R2_BUCKET here, then switch
+  // open-next.config.ts to r2IncrementalCache. Not needed for always-fresh data.
+}

@@ -1,0 +1,636 @@
+/* system/src/app/owner/users/page.tsx
+ * Copyright (c) 2026 Clove Nytrix Doughmination Twilight
+ * Licensed under the DASL-1.0 Licence.
+ * See LICENCE.md in the project root for full licence information.
+ */
+
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useUserInfo, useDoughminationClient } from "@doughmination/react-api";
+import { cn } from "@/lib/utils";
+import * as s from "@/styles/admin.css";
+
+// Human message from either API error convention; the /users admin endpoints
+// aren't wrapped by the package client, so errors are parsed here.
+function apiErrorMessage(body: unknown, fallback: string): string {
+  if (body && typeof body === "object") {
+    const b = body as { error?: { message?: string }; detail?: string; message?: string };
+    return b.error?.message || b.detail || b.message || fallback;
+  }
+  return fallback;
+}
+
+interface User {
+  id: string;
+  username: string;
+  display_name?: string;
+  email?: string | null;
+  created_at?: string | null;
+  is_admin: boolean;
+  is_owner?: boolean;
+  is_pet?: boolean;
+  avatar_url?: string;
+}
+
+const FALLBACK_AVATAR = "https://m.doughmination.gay/img/avatars/favicon.png";
+
+const UserManager: React.FC = () => {
+  const client = useDoughminationClient();
+
+  // Email is contact metadata only (sign-in is PocketID). A user may change
+  // their OWN address on their profile page; an admin/owner may change anyone
+  // else's. This panel only ever acts on other people, so the control is
+  // owner-only here.
+  const currentUser = useUserInfo();
+  const currentUserId = currentUser.data?.id ?? "";
+  const isOwner = !!currentUser.data?.is_owner;
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; content: string } | null>(
+    null,
+  );
+
+  // Create user form state
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newIsAdmin, setNewIsAdmin] = useState(false);
+  const [newIsPet, setNewIsPet] = useState(false);
+
+  // Per-user edit panel state
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editAvatarUrl, setEditAvatarUrl] = useState("");
+  const [editIsAdmin, setEditIsAdmin] = useState(false);
+  const [editIsPet, setEditIsPet] = useState(false);
+
+  const fetchUsers = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage({
+        type: "error",
+        content: "Authentication required"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${client.baseUrl}/plural/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const data = (await response.json()) as User[];
+        setUsers([...data].sort((a, b) => a.username.localeCompare(b.username)));
+      } else {
+        setMessage({
+          type: "error",
+          content: "Failed to fetch users"
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      setMessage({
+        type: "error",
+        content: "Network error occurred"
+      });
+    }
+  }, [client]);
+
+  useEffect(() => {
+    fetchUsers().finally(() => setLoading(false));
+  }, [fetchUsers]);
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newUsername.trim()) {
+      setMessage({
+        type: "error",
+        content: "Username is required"
+      });
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return setMessage({
+      type: "error",
+      content: "Authentication required"
+    });
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`${client.baseUrl}/plural/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          username: newUsername.trim(),
+          display_name: newDisplayName.trim() || undefined,
+          email: newEmail.trim() || undefined,
+          is_admin: newIsAdmin,
+          is_pet: newIsPet,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(apiErrorMessage(errorData, "Failed to create user"));
+      }
+
+      setMessage({
+        type: "success",
+        content: "User created. They can sign in once they authenticate with SSO under this username."
+      });
+      setNewUsername("");
+      setNewDisplayName("");
+      setNewEmail("");
+      setNewIsAdmin(false);
+      setNewIsPet(false);
+      setShowCreateForm(false);
+      await fetchUsers();
+    } catch (err: unknown) {
+      setMessage({
+        type: "error",
+        content: err instanceof Error ? err.message : "Failed to create user",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const startEditing = (user: User) => {
+    setEditingUserId(user.id);
+    setEditDisplayName(user.display_name || "");
+    setEditEmail(user.email || "");
+    setEditAvatarUrl(user.avatar_url || "");
+    setEditIsAdmin(!!user.is_admin);
+    setEditIsPet(!!user.is_pet);
+    setMessage(null);
+  };
+
+  const cancelEditing = () => {
+    setEditingUserId(null);
+  };
+
+  const handleSaveUser = async (user: User) => {
+    const token = localStorage.getItem("token");
+    if (!token) return setMessage({
+      type: "error",
+      content: "Authentication required"
+    });
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`${client.baseUrl}/plural/users/${user.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          // null explicitly clears the field on the API; a value sets it
+          display_name: editDisplayName.trim() || null,
+          avatar_url: editAvatarUrl.trim() || null,
+          is_admin: editIsAdmin,
+          is_pet: editIsPet,
+          // Owner-only field, and only when it actually changed.
+          ...(isOwner && editEmail.trim() !== (user.email || "")
+            ? { email: editEmail.trim() || null }
+            : {}),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(apiErrorMessage(errorData, "Failed to update user"));
+      }
+
+      setMessage({
+        type: "success",
+        content: `Updated @${user.username} successfully!`
+      });
+      setEditingUserId(null);
+      await fetchUsers();
+    } catch (err: unknown) {
+      setMessage({
+        type: "error",
+        content: err instanceof Error ? err.message : "Failed to update user",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, username: string) => {
+    if (userId === currentUserId) {
+      setMessage({
+        type: "error",
+        content: "Cannot delete your own account"
+      });
+      return;
+    }
+
+    if (!window.confirm(`Delete user "${username}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return setMessage({
+      type: "error",
+      content: "Authentication required"
+    });
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`${client.baseUrl}/plural/users/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(apiErrorMessage(errorData, "Failed to delete user"));
+      }
+
+      setMessage({
+        type: "success",
+        content: "User deleted successfully!"
+      });
+      await fetchUsers();
+    } catch (err: unknown) {
+      setMessage({
+        type: "error",
+        content: err instanceof Error ? err.message : "Failed to delete user",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={s.page}>
+        <div className={s.loadingText}>Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={s.page}>
+      <div className={s.wrap}>
+        {/* Header */}
+        <div className={s.headerRow}>
+          <div>
+            <h1 className={s.pageTitle}>User Manager</h1>
+            <p className={s.pageSubtitle}>Manage system users, roles and permissions</p>
+          </div>
+          <Button variant="outline" asChild>
+            <Link href="/owner/dash">Back to Dashboard</Link>
+          </Button>
+        </div>
+
+        {/* Messages */}
+        {message && (
+          <Alert variant={message.type === "error" ? "destructive" : "default"}>
+            <AlertDescription>{message.content}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Create User Button */}
+        {!showCreateForm && (
+          <Card>
+            <CardContent className={s.cardTopPad}>
+              <Button onClick={() => setShowCreateForm(true)} className={s.fullWidth}>
+                + Create New User
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Create User Form */}
+        {showCreateForm && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Create New User</CardTitle>
+              <CardDescription>Add a new user to the system</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleCreateUser} className={s.formStack}>
+                <div className={s.fieldBlock}>
+                  <Label htmlFor="new-username">Username *</Label>
+                  <Input
+                    id="new-username"
+                    type="text"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    placeholder="Enter username"
+                    disabled={saving}
+                  />
+                </div>
+
+                <div className={s.fieldBlock}>
+                  <Label htmlFor="new-email">Email</Label>
+                  <Input
+                    id="new-email"
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="user@example.com"
+                    disabled={saving}
+                  />
+                  <p className={s.helpText}>
+                    Optional contact address. Sign-in is handled by SSO — this account links to
+                    the person the first time they log in under this username.
+                  </p>
+                </div>
+
+                <div className={s.fieldBlock}>
+                  <Label htmlFor="new-display-name">Display Name</Label>
+                  <Input
+                    id="new-display-name"
+                    type="text"
+                    value={newDisplayName}
+                    onChange={(e) => setNewDisplayName(e.target.value)}
+                    placeholder="Optional display name"
+                    disabled={saving}
+                  />
+                </div>
+
+                <div className={s.checkboxRow}>
+                  <Checkbox
+                    id="new-is-admin"
+                    checked={newIsAdmin}
+                    onCheckedChange={(checked) => setNewIsAdmin(checked as boolean)}
+                    disabled={saving}
+                  />
+                  <Label htmlFor="new-is-admin" className={s.checkboxLabel}>
+                    Admin privileges
+                  </Label>
+                </div>
+
+                <div className={s.checkboxRow}>
+                  <Checkbox
+                    id="new-is-pet"
+                    checked={newIsPet}
+                    onCheckedChange={(checked) => setNewIsPet(checked as boolean)}
+                    disabled={saving}
+                  />
+                  <Label htmlFor="new-is-pet" className={s.checkboxLabel}>
+                    Pet role
+                  </Label>
+                </div>
+
+                <div className={s.buttonRow}>
+                  <Button type="submit" disabled={saving} className={s.flexGrow}>
+                    {saving ? "Creating..." : "Create User"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      setNewUsername("");
+                      setNewDisplayName("");
+                      setNewEmail("");
+                      setNewIsAdmin(false);
+                      setNewIsPet(false);
+                    }}
+                    disabled={saving}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Users List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Users</CardTitle>
+            <CardDescription>
+              {users.length} user{users.length !== 1 ? "s" : ""} in the system
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {users.length > 0 ? (
+              <div className={s.listStack}>
+                {users.map((user) => {
+                  const isCurrentUser = user.id === currentUserId;
+                  const isEditing = editingUserId === user.id;
+
+                  return (
+                    <React.Fragment key={user.id}>
+                      <div className={cn(s.userRow, isCurrentUser && s.userRowCurrent)}>
+                        {/* Avatar */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={user.avatar_url || FALLBACK_AVATAR}
+                          alt={user.display_name || user.username}
+                          className={s.userAvatar}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = FALLBACK_AVATAR;
+                          }}
+                        />
+
+                        {/* User Info */}
+                        <div className={s.userInfo}>
+                          <div className={s.userNameRow}>
+                            <p className={s.userName}>{user.display_name || user.username}</p>
+                            {user.is_owner && (
+                              <Badge variant="default" className={s.smallBadge}>
+                                Owner
+                              </Badge>
+                            )}
+                            {user.is_admin && (
+                              <Badge variant="destructive" className={s.smallBadge}>
+                                Admin
+                              </Badge>
+                            )}
+                            {user.is_pet && (
+                              <Badge variant="default" className={s.smallBadge}>
+                                Pet
+                              </Badge>
+                            )}
+                            {isCurrentUser && (
+                              <Badge variant="secondary" className={s.smallBadge}>
+                                You
+                              </Badge>
+                            )}
+                          </div>
+                          <p className={s.userHandle}>@{user.username}</p>
+                          <p className={s.userHandle}>{user.email || "no email on file"}</p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className={s.buttonRow}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => (isEditing ? cancelEditing() : startEditing(user))}
+                            disabled={saving}
+                          >
+                            {isEditing ? "Close" : "Edit"}
+                          </Button>
+                          {!isCurrentUser && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteUser(user.id, user.username)}
+                              disabled={saving}
+                            >
+                              Delete
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Edit Panel — roles, display name, avatar URL */}
+                      {isEditing && (
+                        <div className={s.editPanel}>
+                          <div className={s.fieldBlock}>
+                            <Label htmlFor={`edit-display-${user.id}`}>Display Name</Label>
+                            <Input
+                              id={`edit-display-${user.id}`}
+                              type="text"
+                              value={editDisplayName}
+                              onChange={(e) => setEditDisplayName(e.target.value)}
+                              placeholder="Display name"
+                              disabled={saving}
+                            />
+                          </div>
+
+                          <div className={s.fieldBlock}>
+                            <Label htmlFor={`edit-email-${user.id}`}>Email</Label>
+                            <Input
+                              id={`edit-email-${user.id}`}
+                              type="email"
+                              value={editEmail}
+                              onChange={(e) => setEditEmail(e.target.value)}
+                              placeholder="user@example.com"
+                              disabled={saving || !isOwner}
+                            />
+                            <p className={s.helpText}>
+                              {isOwner
+                                ? "Contact address only — sign-in email is managed by your SSO provider."
+                                : "Only the owner can change someone else's email. Your own is on your profile page."}
+                            </p>
+                          </div>
+
+                          <div className={s.fieldBlock}>
+                            <Label htmlFor={`edit-avatar-${user.id}`}>Avatar URL</Label>
+                            <Input
+                              id={`edit-avatar-${user.id}`}
+                              type="url"
+                              value={editAvatarUrl}
+                              onChange={(e) => setEditAvatarUrl(e.target.value)}
+                              placeholder="https://example.com/avatar.png"
+                              disabled={saving}
+                            />
+                            <p className={s.helpText}>
+                              Avatars are external image links — no uploads
+                            </p>
+                          </div>
+
+                          <div className={s.checkboxRow}>
+                            <Checkbox
+                              id={`edit-admin-${user.id}`}
+                              checked={editIsAdmin}
+                              onCheckedChange={(checked) => setEditIsAdmin(checked as boolean)}
+                              disabled={saving}
+                            />
+                            <Label htmlFor={`edit-admin-${user.id}`} className={s.checkboxLabel}>
+                              Admin privileges
+                            </Label>
+                          </div>
+
+                          <div className={s.checkboxRow}>
+                            <Checkbox
+                              id={`edit-pet-${user.id}`}
+                              checked={editIsPet}
+                              onCheckedChange={(checked) => setEditIsPet(checked as boolean)}
+                              disabled={saving}
+                            />
+                            <Label htmlFor={`edit-pet-${user.id}`} className={s.checkboxLabel}>
+                              Pet role
+                            </Label>
+                          </div>
+
+                          <div className={s.buttonRow}>
+                            <Button
+                              onClick={() => handleSaveUser(user)}
+                              disabled={saving}
+                              className={s.flexGrow}
+                            >
+                              {saving ? "Saving..." : "Save Changes"}
+                            </Button>
+                            <Button variant="outline" onClick={cancelEditing} disabled={saving}>
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className={s.emptyNote}>No users found</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Statistics */}
+        <Card>
+          <CardHeader>
+            <CardTitle>User Statistics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={s.statsGrid}>
+              <div className={s.statBox}>
+                <p className={s.statLabel}>Total Users</p>
+                <p className={s.statValue}>{users.length}</p>
+              </div>
+              <div className={s.statBox}>
+                <p className={s.statLabel}>Admins</p>
+                <p className={s.statValue}>{users.filter((u) => u.is_admin).length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default function UserManagerPage() {
+  return (
+    <ProtectedRoute ownerRequired>
+      <UserManager />
+    </ProtectedRoute>
+  );
+}
