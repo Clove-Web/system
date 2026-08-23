@@ -41,8 +41,11 @@ export const vars = createGlobalThemeContract({
 
 /** Not flavor-dependent, but goes through the same contract so it's always
  *  referenced via var(--font-comic) — never inlined as a raw string, which
- *  trips up the CSS serializer on the quote+comma combo. */
-const FONT_COMIC_VALUE = "'Comic Code', cursive";
+ *  trips up the CSS serializer on the quote+comma combo.
+ *  Token kept its old name across the terminal/clunky redesign (renaming it
+ *  would mean touching every consumer) but now points at IBM Plex Mono. */
+const FONT_COMIC_VALUE =
+  "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 /**
  * One palette, applied globally. The old per-flavor themes (cherry, toxic,

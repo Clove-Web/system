@@ -7,34 +7,14 @@
  * app's src/css/main.css + fonts.css to vanilla-extract globalStyle calls.
  */
 
-import { globalFontFace, globalStyle } from "@vanilla-extract/css";
+import { globalStyle } from "@vanilla-extract/css";
 import { vars } from "./theme.css";
 
 /* ============================================================================
-   FONTS — Comic Code
+   FONTS — IBM Plex Mono, loaded via the Google Fonts <link> in layout.tsx
+   (the terminal/clunky redesign replaced the old self-hosted Comic Code face)
    ============================================================================ */
-const comic = "Comic Code";
-
-globalFontFace(comic, {
-  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Regular.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Regular.woff') format('woff')",
-  fontWeight: 400,
-  fontStyle: "normal",
-});
-globalFontFace(comic, {
-  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Italic.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Italic.woff') format('woff')",
-  fontWeight: 400,
-  fontStyle: "italic",
-});
-globalFontFace(comic, {
-  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Medium.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Medium.woff') format('woff')",
-  fontWeight: 500,
-  fontStyle: "normal",
-});
-globalFontFace(comic, {
-  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Bold.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Bold.woff') format('woff')",
-  fontWeight: 700,
-  fontStyle: "normal",
-});
+const mono = "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 /* ============================================================================
    GLOBAL RESET & BASE STYLES
@@ -56,7 +36,7 @@ globalStyle("html", {
 });
 
 globalStyle("body", {
-  fontFamily: `'${comic}', sans-serif`,
+  fontFamily: mono,
   background: vars.bg,
   color: vars.text,
   minHeight: "100vh",
@@ -66,7 +46,7 @@ globalStyle("body", {
 globalStyle(
   "h1, h2, h3, h4, h5, h6, label, input, select, textarea, button",
   {
-    fontFamily: `'${comic}', cursive`,
+    fontFamily: mono,
   },
 );
 

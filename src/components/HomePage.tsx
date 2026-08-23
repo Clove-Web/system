@@ -21,7 +21,14 @@ import { Button } from "@/components/ui/button";
 import { cn, normalizeColor, readableOnDark } from "@/lib/utils";
 import * as site from "@/styles/site.css";
 import * as s from "@/app/home.css";
-import { Github } from "react-bootstrap-icons";
+import {
+  Github,
+  CheckCircleFill,
+  ExclamationTriangleFill,
+  ExclamationCircleFill,
+  ExclamationOctagonFill,
+  ShieldFillExclamation,
+} from "react-bootstrap-icons";
 
 // The member shape comes straight from the package now.
 type Member = PluralMember;
@@ -201,15 +208,12 @@ export default function HomePage() {
     return labels[level] || level;
   };
 
-  const getMentalStateIcon = (level: string) => {
-    const icons: { [key: string]: string } = {
-      safe: "✅",
-      unstable: "⚠️",
-      idealizing: "❗",
-      "self-harming": "🚨",
-      "highly at risk": "⛔",
-    };
-    return icons[level] || "❓";
+  const MENTAL_STATE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+    safe: CheckCircleFill,
+    unstable: ExclamationTriangleFill,
+    idealizing: ExclamationCircleFill,
+    "self-harming": ExclamationOctagonFill,
+    "highly at risk": ShieldFillExclamation,
   };
 
   if (loading) {
@@ -224,8 +228,12 @@ export default function HomePage() {
     <div className={s.page}>
       {/* WebSocket Connection Indicator */}
       {!wsConnected && (
-        <div className={s.wsBanner}>⚠️ Live updates disconnected. Reconnecting...</div>
+        <div className={s.wsBanner}>[ ! ] Live updates disconnected. Reconnecting...</div>
       )}
+
+      {/* Background image — see home.css.ts bgImageLayer for the source URL */}
+      <div className={s.bgImageLayer} />
+      <div className={s.bgScrim} />
 
       {/* Header with navigation */}
       <header className={s.header}>
@@ -352,6 +360,7 @@ export default function HomePage() {
             </div>
           </div>
         )}
+        <div className={s.flagStripe} />
       </header>
 
       {/* Space for fixed header */}
@@ -361,33 +370,41 @@ export default function HomePage() {
       <main className={s.main}>
         <div className={s.contentWrapper}>
           <div>
+            <div className={s.pageOverline}>// system.members</div>
             <h1 className={s.pageTitle}>System Members</h1>
 
             {/* Mental State Banner */}
-            {systemInfo?.mental_state && (
-              <div
-                className={cn(
-                  site.mentalStateBanner,
-                  MENTAL_STATE_CLASSES[systemInfo.mental_state.level],
-                )}
-              >
-                <div className={s.bannerRow}>
-                  <span className={s.bannerIcon}>
-                    {getMentalStateIcon(systemInfo.mental_state.level)}
-                  </span>
-                  <div>
-                    <span>Current Status: </span>
-                    <span>{getMentalStateLabel(systemInfo.mental_state.level)}</span>
-                    {systemInfo.mental_state.notes && (
-                      <p className={s.bannerNotes}>{systemInfo.mental_state.notes}</p>
-                    )}
+            {systemInfo?.mental_state && (() => {
+              const StateIcon = MENTAL_STATE_ICONS[systemInfo.mental_state.level];
+              return (
+                <div
+                  className={cn(
+                    site.mentalStateBanner,
+                    MENTAL_STATE_CLASSES[systemInfo.mental_state.level],
+                  )}
+                >
+                  <div className={s.bannerRow}>
+                    <div className={s.bannerIconBlock}>
+                      {StateIcon && <StateIcon className={s.bannerIcon} />}
+                    </div>
+                    <div className={s.bannerBody}>
+                      <div className={s.bannerLabelRow}>
+                        <span className={s.bannerLabelKey}>status:</span>
+                        <span className={s.bannerLabelValue}>
+                          [ {getMentalStateLabel(systemInfo.mental_state.level)} ]
+                        </span>
+                      </div>
+                      {systemInfo.mental_state.notes && (
+                        <p className={s.bannerNotes}>{systemInfo.mental_state.notes}</p>
+                      )}
+                      <small className={s.bannerUpdated}>
+                        last_updated: {new Date(systemInfo.mental_state.updated_at).toLocaleString()}
+                      </small>
+                    </div>
                   </div>
                 </div>
-                <small className={s.bannerUpdated}>
-                  Last updated: {new Date(systemInfo.mental_state.updated_at).toLocaleString()}
-                </small>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Currently Fronting Section */}
             {fronting && fronting.members && fronting.members.length > 0 && (
@@ -400,33 +417,9 @@ export default function HomePage() {
                     const memberColor = normalizeColor(member.color);
                     const borderColor = memberColor || "var(--accent)";
                     const nameColor = readableOnDark(member.color, "var(--accent)");
-                    // Appending "40" only yields valid CSS for a hex literal.
-                    const glow = memberColor
-                      ? `${memberColor}40`
-                      : "color-mix(in srgb, var(--accent) 25%, transparent)";
 
                     return (
                       <div key={member.id || `${member.name}-${index}`} className={s.frontingItem}>
-                        {/* Status Bubble - Thought Bubble Style */}
-                        {member.status && (
-                          <div className={s.bubbleWrap}>
-                            <div className={s.bubble}>
-                              <div className={s.bubbleRow}>
-                                {member.status.emoji && (
-                                  <span className={s.bubbleEmoji}>{member.status.emoji}</span>
-                                )}
-                                <span className={s.bubbleText}>{member.status.text}</span>
-                              </div>
-                              {/* Thought bubble circles - staggered diagonally toward avatar */}
-                              <div className={s.bubbleDotWrapLarge}>
-                                <div className={s.bubbleDotLarge}></div>
-                              </div>
-                              <div className={s.bubbleDotWrapSmall}>
-                                <div className={s.bubbleDotSmall}></div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
                         <Link href={`/${member.name}`}>
                           <div className={s.searchRelative}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -436,7 +429,7 @@ export default function HomePage() {
                               className={s.avatarImg}
                               style={{
                                 borderColor: borderColor,
-                                boxShadow: `0 0 12px ${glow}`,
+                                boxShadow: `3px 3px 0 ${borderColor}`,
                               }}
                               loading="lazy"
                               onError={(e) => {
@@ -463,6 +456,18 @@ export default function HomePage() {
                                     {tag}
                                   </span>
                                 ))}
+                            </div>
+                          )}
+
+                          {/* Status tag — plain bordered box, replaces the old thought bubble */}
+                          {member.status && (
+                            <div className={s.statusTagWrap}>
+                              <div className={s.statusTag}>
+                                {member.status.emoji && (
+                                  <span className={s.statusTagEmoji}>{member.status.emoji}</span>
+                                )}
+                                <span className={s.statusTagText}>{member.status.text}</span>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -544,10 +549,6 @@ export default function HomePage() {
                   const memberColor = normalizeColor(member.color);
                   const borderColor = memberColor || "var(--accent)";
                   const nameColor = readableOnDark(member.color, "var(--text)");
-                  const glow = memberColor
-                    ? `${memberColor}40`
-                    : "color-mix(in srgb, var(--accent) 25%, transparent)";
-
                   return (
                     <div
                       key={member.id}
@@ -562,26 +563,6 @@ export default function HomePage() {
                         } as React.CSSProperties & { "--member-color": string }
                       }
                     >
-                      {/* Status Bubble - Thought Bubble Style */}
-                      {member.status && (
-                        <div className={s.bubbleWrapGrid}>
-                          <div className={s.bubble} style={{ maxWidth: "130px" }}>
-                            <div className={s.bubbleRow}>
-                              {member.status.emoji && (
-                                <span className={s.bubbleEmoji}>{member.status.emoji}</span>
-                              )}
-                              <span className={s.bubbleText}>{member.status.text}</span>
-                            </div>
-                            {/* Thought bubble circles - staggered diagonally toward avatar */}
-                            <div className={s.bubbleDotWrapLarge}>
-                              <div className={s.bubbleDotLarge}></div>
-                            </div>
-                            <div className={s.bubbleDotWrapSmall}>
-                              <div className={s.bubbleDotSmall}></div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
                       <Link href={`/${member.name}`}>
                         <div className={s.cardCenter}>
                           <div className={s.relativeInline}>
@@ -592,7 +573,7 @@ export default function HomePage() {
                               className={s.avatarImgGrid}
                               style={{
                                 borderColor: borderColor,
-                                boxShadow: `0 0 12px ${glow}`,
+                                boxShadow: `3px 3px 0 ${borderColor}`,
                               }}
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src = FALLBACK_AVATAR;
@@ -622,6 +603,18 @@ export default function HomePage() {
                               {member.tags.length > 2 && (
                                 <span className={s.tagMore}>+{member.tags.length - 2}</span>
                               )}
+                            </div>
+                          )}
+
+                          {/* Status tag — plain bordered box, replaces the old thought bubble */}
+                          {member.status && (
+                            <div className={s.statusTagWrap}>
+                              <div className={s.statusTag} style={{ maxWidth: "130px" }}>
+                                {member.status.emoji && (
+                                  <span className={s.statusTagEmoji}>{member.status.emoji}</span>
+                                )}
+                                <span className={s.statusTagText}>{member.status.text}</span>
+                              </div>
                             </div>
                           )}
                         </div>

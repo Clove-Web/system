@@ -7,16 +7,21 @@
  * pages/Index.tsx).
  */
 
-import { globalStyle, style, keyframes } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 import { vars } from "@/styles/theme.css";
-
-// Shared trans-flag gradient title, uniform across every site.
-const transSlide = keyframes({
-  to: { backgroundPositionX: "200%" },
-});
 
 const mix = (color: string, pct: number) =>
   `color-mix(in srgb, ${color} ${pct}%, transparent)`;
+
+/** Trans-flag stripe, reused as a thin accent rule under the header and above
+ *  the footer instead of the old animated gradient page title. */
+export const flagStripe = style({
+  height: "3px",
+  width: "100%",
+  flexShrink: 0,
+  background:
+    "repeating-linear-gradient(90deg, #5BCEFA 0 20%, #F5A9B8 20% 40%, #ffffff 40% 60%, #F5A9B8 60% 80%, #5BCEFA 80% 100%)",
+});
 
 export const loadingWrap = style({
   display: "flex",
@@ -33,10 +38,32 @@ export const loadingText = style({
 });
 
 export const page = style({
+  position: "relative",
+  isolation: "isolate",
   minHeight: "100vh",
   backgroundColor: vars.bg,
   color: vars.text,
-  transition: "background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease",
+});
+
+/** Full-bleed background image behind everything else on the page — blurred
+ *  and darkened so panel text stays legible over it. Swap the URL for a
+ *  different asset here if the source image ever moves. */
+export const bgImageLayer = style({
+  position: "fixed",
+  inset: "-40px",
+  zIndex: -1,
+  backgroundImage: "url('https://m.doughmination.gay/img/bg/main.png')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  filter: "blur(16px) brightness(0.55) saturate(0.9)",
+  transform: "scale(1.08)",
+});
+
+export const bgScrim = style({
+  position: "fixed",
+  inset: 0,
+  zIndex: -1,
+  backgroundColor: "rgba(5, 6, 10, 0.45)",
 });
 
 export const wsBanner = style({
@@ -45,13 +72,15 @@ export const wsBanner = style({
   left: 0,
   right: 0,
   zIndex: 50,
-  backgroundColor: "#eab308",
-  color: "#000",
+  backgroundColor: vars.accentAlt,
+  color: vars.bgDeep,
   textAlign: "center",
   padding: "0.5rem 0",
-  fontSize: "0.875rem",
+  fontSize: "0.75rem",
   fontFamily: vars.fontComic,
-  fontWeight: 600,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
 });
 
 /* Header */
@@ -61,11 +90,8 @@ export const header = style({
   left: 0,
   width: "100%",
   zIndex: 40,
-  backgroundColor: mix(vars.bg, 90),
-  backdropFilter: "blur(4px)",
-  WebkitBackdropFilter: "blur(4px)",
-  borderBottom: `1px solid ${vars.surface}`,
-  transition: "background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease",
+  backgroundColor: mix(vars.bgDeep, 82),
+  borderBottom: `2px solid ${vars.surfaceHigher}`,
 });
 
 export const headerInner = style({
@@ -78,13 +104,26 @@ export const headerInner = style({
 });
 
 export const logoLink = style({
-  fontSize: "1.5rem",
+  fontSize: "1.0625rem",
   fontWeight: 700,
   fontFamily: vars.fontComic,
-  color: vars.accent,
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+  color: vars.text,
   textDecoration: "none",
   transition: "color 0.15s ease",
-  ":hover": { color: mix(vars.accent, 80) },
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.625rem",
+  ":hover": { color: mix(vars.text, 80) },
+  "::before": {
+    content: "''",
+    display: "inline-block",
+    width: "8px",
+    height: "8px",
+    backgroundColor: vars.accent,
+    flexShrink: 0,
+  },
 });
 
 export const navUser = style({
@@ -105,10 +144,10 @@ export const mobileMenuBtn = style({
   alignItems: "center",
   justifyContent: "center",
   padding: "0.5rem",
-  borderRadius: "0.375rem",
+  borderRadius: 0,
   backgroundColor: vars.surface,
   color: vars.text,
-  border: "none",
+  border: `1px solid ${vars.surfaceHigher}`,
   cursor: "pointer",
   transition: "color 0.15s ease, background-color 0.15s ease",
   ":hover": {
@@ -147,11 +186,8 @@ export const mobilePanel = style({
   width: "16rem",
   maxWidth: "80vw",
   height: "100vh",
-  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-  backgroundColor: mix(vars.bg, 95),
-  backdropFilter: "blur(4px)",
-  WebkitBackdropFilter: "blur(4px)",
-  borderLeft: `1px solid ${vars.surface}`,
+  backgroundColor: vars.bgDeep,
+  borderLeft: `2px solid ${vars.surfaceHigher}`,
 });
 
 export const mobileList = style({
@@ -182,38 +218,31 @@ export const mobileLink = style({
   display: "block",
   width: "100%",
   padding: "0.75rem 1rem",
-  borderRadius: "0.5rem",
-  fontSize: "0.875rem",
+  borderRadius: 0,
+  fontSize: "0.8125rem",
   textAlign: "center",
-  transition: "all 0.15s ease",
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+  transition: "background-color 0.15s ease, color 0.15s ease",
   fontFamily: vars.fontComic,
-  fontWeight: 600,
+  fontWeight: 700,
   backgroundColor: vars.surface,
-  color: vars.text,
+  color: vars.textSoft,
   textDecoration: "none",
-  border: "none",
+  border: `1px solid ${vars.surfaceHigher}`,
   cursor: "pointer",
   ":hover": {
     backgroundColor: vars.accent,
-    color: vars.accentAlt,
+    color: vars.bgDeep,
   },
 });
 
-export const mobileLogout = style({
-  width: "100%",
-  padding: "0.75rem 1rem",
-  backgroundColor: vars.danger,
-  color: vars.bg,
-  borderRadius: "0.5rem",
-  fontSize: "0.875rem",
-  textAlign: "center",
-  transition: "background-color 0.15s ease",
-  fontFamily: vars.fontComic,
-  fontWeight: 600,
-  border: "none",
-  cursor: "pointer",
-  ":hover": { backgroundColor: mix(vars.danger, 80) },
-});
+export const mobileLogout = style([mobileLink, {
+  backgroundColor: "transparent",
+  color: vars.danger,
+  border: `1px solid ${vars.danger}`,
+  ":hover": { backgroundColor: vars.danger, color: vars.bgDeep },
+}]);
 
 export const headerSpacer = style({ height: "5rem" });
 
@@ -240,49 +269,90 @@ export const contentWrapper = style({
   },
 });
 
+export const pageOverline = style({
+  fontSize: "0.75rem",
+  fontFamily: vars.fontComic,
+  fontWeight: 600,
+  color: vars.textDim,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  textAlign: "center",
+  marginBottom: "0.375rem",
+});
+
 export const pageTitle = style({
-  fontSize: "2.25rem",
+  fontSize: "1.75rem",
   fontWeight: 700,
   marginBottom: "2rem",
   textAlign: "center",
   fontFamily: vars.fontComic,
-  letterSpacing: "-0.02em",
-  backgroundImage:
-    "linear-gradient(90deg, #5BCEFA, #F5A9B8, #ffffff, #F5A9B8, #5BCEFA, #5BCEFA)",
-  backgroundSize: "200% 100%",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  color: "transparent",
-  animation: `${transSlide} 6s linear infinite`,
-  "@media": {
-    "(prefers-reduced-motion: reduce)": {
-      animation: "none",
-    },
-  },
+  letterSpacing: "-0.01em",
+  textTransform: "uppercase",
+  color: vars.text,
 });
 
 /* Mental state banner extras */
 export const bannerRow = style({
   display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "0.75rem",
+  alignItems: "stretch",
+  gap: 0,
 });
 
-export const bannerIcon = style({ fontSize: "1.5rem" });
+export const bannerIconBlock = style({
+  width: "3.25rem",
+  flexShrink: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "currentColor",
+});
+
+export const bannerIcon = style({
+  width: "1.25rem",
+  height: "1.25rem",
+  color: vars.bgDeep,
+});
+
+export const bannerBody = style({
+  padding: "0.875rem 1.125rem",
+  flex: 1,
+  textAlign: "left",
+});
+
+export const bannerLabelRow = style({
+  display: "flex",
+  alignItems: "baseline",
+  gap: "0.625rem",
+});
+
+export const bannerLabelKey = style({
+  fontSize: "0.6875rem",
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: vars.textDim,
+  fontFamily: vars.fontComic,
+});
+
+export const bannerLabelValue = style({
+  fontSize: "0.875rem",
+  fontWeight: 700,
+  letterSpacing: "0.03em",
+  textTransform: "uppercase",
+  fontFamily: vars.fontComic,
+});
 
 export const bannerNotes = style({
-  marginTop: "0.5rem",
+  marginTop: "0.375rem",
   fontFamily: vars.fontComic,
-  fontSize: "0.875rem",
-  opacity: 0.8,
+  fontSize: "0.8125rem",
+  color: vars.textSoft,
 });
 
 export const bannerUpdated = style({
   display: "block",
   marginTop: "0.5rem",
-  opacity: 0.75,
-  textAlign: "center",
+  fontSize: "0.6875rem",
+  color: vars.textFaint,
   fontFamily: vars.fontComic,
 });
 
@@ -290,14 +360,17 @@ export const bannerUpdated = style({
 export const frontingSection = style({
   marginBottom: "1.5rem",
   padding: "1rem",
-  borderBottom: `1px solid ${vars.surface}`,
+  border: `1px solid ${vars.surfaceHigher}`,
 });
 
 export const frontingTitle = style({
-  fontSize: "1.25rem",
+  fontSize: "0.6875rem",
   fontFamily: vars.fontComic,
-  fontWeight: 600,
-  marginBottom: "0.75rem",
+  fontWeight: 700,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: vars.textDim,
+  marginBottom: "0.875rem",
   textAlign: "center",
 });
 
@@ -315,88 +388,47 @@ export const frontingItem = style({
   position: "relative",
 });
 
-/* Thought-bubble status */
-export const bubbleWrap = style({
-  position: "absolute",
-  top: "-2.5rem",
-  left: "50%",
-  transform: "translateX(-50%)",
-  zIndex: 20,
+/* Status tag — a plain bordered box in normal flow, replacing the old
+   floating thought-bubble-with-dots treatment. */
+export const statusTagWrap = style({
+  marginTop: "0.5rem",
+  textAlign: "center",
 });
 
-export const bubbleWrapGrid = style([bubbleWrap, { top: "-3rem" }]);
-
-export const bubble = style({
-  position: "relative",
-  backgroundColor: vars.bg,
-  border: `2px solid ${vars.surface}`,
-  borderRadius: "30px",
-  padding: "0.375rem 0.75rem",
-  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+export const statusTag = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.3rem",
+  justifyContent: "center",
+  backgroundColor: vars.bgDeep,
+  border: `1px solid ${vars.surfaceHigher}`,
+  padding: "0.3rem 0.6rem",
   maxWidth: "140px",
 });
 
-export const bubbleRow = style({
-  display: "flex",
-  alignItems: "center",
-  gap: "0.375rem",
-});
+export const statusTagEmoji = style({ fontSize: "0.8125rem" });
 
-export const bubbleEmoji = style({ fontSize: "0.875rem" });
-
-export const bubbleText = style({
-  fontSize: "0.75rem",
+export const statusTagText = style({
+  fontSize: "0.6875rem",
   fontFamily: vars.fontComic,
   fontWeight: 600,
-  color: vars.text,
+  color: vars.textSoft,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
-});
-
-export const bubbleDotWrapLarge = style({
-  position: "absolute",
-  bottom: "-1.25rem",
-  left: "50%",
-  transform: "translateX(calc(-50% + 0.5rem))",
-});
-
-export const bubbleDotWrapSmall = style({
-  position: "absolute",
-  bottom: "-1.75rem",
-  left: "50%",
-  transform: "translateX(calc(-50% + 0.75rem))",
-});
-
-export const bubbleDotLarge = style({
-  width: "0.625rem",
-  height: "0.625rem",
-  backgroundColor: vars.bg,
-  border: `2px solid ${vars.surface}`,
-  borderRadius: "9999px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-});
-
-export const bubbleDotSmall = style({
-  width: "0.375rem",
-  height: "0.375rem",
-  backgroundColor: vars.bg,
-  border: `1px solid ${vars.surface}`,
-  borderRadius: "9999px",
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
 });
 
 /* Avatars & member cards */
 export const avatarImg = style({
   width: "4rem",
   height: "4rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   objectFit: "cover",
-  borderWidth: "3px",
+  borderWidth: "2px",
   borderStyle: "solid",
-  transition: "all 0.15s ease",
+  transition: "filter 0.15s ease",
   cursor: "pointer",
-  ":hover": { transform: "scale(1.05)" },
+  ":hover": { filter: "brightness(1.15)" },
 });
 
 export const avatarImgGrid = style([
@@ -457,18 +489,21 @@ export const tagRow = style({
 export const tagRowSpaced = style([tagRow, { marginTop: "0.5rem" }]);
 
 export const tagChip = style({
-  fontSize: "0.75rem",
+  fontSize: "0.6875rem",
   padding: "0.125rem 0.5rem",
-  borderRadius: "9999px",
-  backgroundColor: vars.surface,
-  color: vars.text,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
+  backgroundColor: "transparent",
+  color: vars.textSoft,
   fontFamily: vars.fontComic,
-  fontWeight: 600,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
 });
 
 export const tagMore = style({
-  fontSize: "0.75rem",
-  color: vars.textMuted,
+  fontSize: "0.6875rem",
+  color: vars.textDim,
   fontFamily: vars.fontComic,
   fontWeight: 600,
 });

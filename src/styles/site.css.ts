@@ -16,8 +16,9 @@ const tablet = "screen and (min-width: 641px) and (max-width: 1024px)";
 const ultrawide = "screen and (min-width: 1920px)";
 
 // No per-flavor font token in the new theme contract — same face across
-// every flavor, so it just lives here as a plain constant.
-const FONT_COMIC = "'Comic Code', cursive";
+// every flavor, so it just lives here as a plain constant. Kept its old name
+// (see theme.css.ts) but now points at IBM Plex Mono.
+const FONT_COMIC = "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 export const fontComic = style({
   fontFamily: FONT_COMIC,
@@ -164,31 +165,26 @@ globalStyle(`${memberGridItem} a`, {
   gap: "0.25rem",
   height: "100%",
   width: "100%",
-  borderRadius: "0.75rem",
-  backdropFilter: "blur(10px)",
-  WebkitBackdropFilter: "blur(10px)",
-  transition: "all 0.3s ease",
+  borderRadius: 0,
+  transition: "border-color 0.15s ease, background-color 0.15s ease",
   textDecoration: "none !important" as unknown as "none",
   /* `surface` sits one step lighter than `bg` in every flavour, so the card
      reads as a distinct panel instead of blending into the page. */
   backgroundColor: vars.surface,
-  border: `1px solid ${vars.surfaceHi}`,
-  boxShadow: "0 1px 3px rgb(0 0 0 / 0.35)",
+  border: `1px solid ${vars.surfaceHigher}`,
   color: vars.text,
 });
 
-/* Lift on hover, and go one shade lighter than the resting card. */
+/* Border pops, no lift/glow — hard edges instead of soft motion. */
 globalStyle(`${memberGridItem} a:hover`, {
-  transform: "translateY(-5px)",
-  boxShadow: `0 10px 15px -3px color-mix(in srgb, ${vars.accent} 40%, transparent)`,
-  borderColor: `color-mix(in srgb, ${vars.accent} 70%, transparent)`,
+  borderColor: vars.accent,
   backgroundColor: vars.surfaceHi,
 });
 
 /* Avatars */
 export const avatarContainer = style({
   position: "relative",
-  borderRadius: "50%",
+  borderRadius: 0,
   overflow: "hidden",
   flexShrink: 0,
   margin: "0 auto",
@@ -224,7 +220,8 @@ globalStyle(`${avatarContainer} img`, {
 });
 
 globalStyle(`${memberGridItem} a:hover ${avatarContainer}`, {
-  boxShadow: "0 0 20px var(--member-color)",
+  borderColor: "var(--member-color)",
+  boxShadow: "3px 3px 0 var(--member-color)",
 });
 
 /* Fronting members */
@@ -289,13 +286,13 @@ const pulse = keyframes({
 });
 
 export const mentalStateBanner = style({
-  padding: "1rem",
   margin: "1rem 0",
-  borderRadius: "0.5rem",
-  border: "2px solid",
+  borderRadius: 0,
+  border: "1px solid",
   position: "relative",
   fontFamily: FONT_COMIC,
   fontWeight: 600,
+  overflow: "hidden",
 });
 
 globalStyle(`${mentalStateBanner} *`, {
@@ -304,29 +301,25 @@ globalStyle(`${mentalStateBanner} *`, {
 });
 
 export const mentalStateSafe = style({
-  background:
-    "linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)",
+  background: "rgba(34, 197, 94, 0.06)",
   borderColor: "rgba(34, 197, 94, 0.5)",
   color: "#10b981",
 });
 
 export const mentalStateUnstable = style({
-  background:
-    "linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)",
+  background: "rgba(251, 191, 36, 0.06)",
   borderColor: "rgba(251, 191, 36, 0.5)",
   color: "#f59e0b",
 });
 
 export const mentalStateSelfHarming = style({
-  background:
-    "linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%)",
+  background: "rgba(239, 68, 68, 0.08)",
   borderColor: "rgba(239, 68, 68, 0.7)",
   color: "#f87171",
 });
 
 export const mentalStateHighlyAtRisk = style({
-  background:
-    "linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(220, 38, 38, 0.15) 100%)",
+  background: "rgba(220, 38, 38, 0.1)",
   borderColor: "rgba(220, 38, 38, 0.8)",
   color: "#fca5a5",
   animation: `${pulse} 2s infinite`,
@@ -337,16 +330,15 @@ export const hostBadge = style({
   display: "inline-block",
   fontSize: "0.7rem",
   padding: "0.15rem 0.55rem",
-  borderRadius: "0.35rem",
+  borderRadius: 0,
   marginLeft: "0.5rem",
-  fontWeight: 600,
+  fontWeight: 700,
   textTransform: "uppercase",
   verticalAlign: "middle",
   letterSpacing: "0.5px",
   fontFamily: FONT_COMIC,
   background: vars.accent,
   color: vars.bg,
-  boxShadow: `0 2px 4px color-mix(in srgb, ${vars.accent} 50%, transparent)`,
 });
 
 /* Footer */
@@ -356,29 +348,30 @@ export const githubFooter = style({
   textAlign: "center",
   width: "100%",
   fontFamily: FONT_COMIC,
-  borderTop: `1px solid color-mix(in srgb, ${vars.surface} 30%, transparent)`,
+  borderTop: `2px solid ${vars.surfaceHigher}`,
 });
 
 export const githubButton = style({
   display: "inline-flex",
   alignItems: "center",
   gap: "0.5rem",
-  padding: "1rem 2rem",
-  minHeight: "3.5rem",
-  borderRadius: "0.5rem",
-  fontWeight: 600,
-  transition: "all 0.2s ease",
+  padding: "0.875rem 1.75rem",
+  minHeight: "3rem",
+  borderRadius: 0,
+  fontWeight: 700,
+  fontSize: "0.8125rem",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  transition: "background-color 0.15s ease, color 0.15s ease",
   fontFamily: FONT_COMIC,
   textDecoration: "none",
-  background: vars.surface,
-  color: `${vars.text} !important` as unknown as string,
-  boxShadow: `0 2px 4px color-mix(in srgb, ${vars.text} 10%, transparent)`,
-  border: `1px solid ${vars.surface}`,
+  background: "transparent",
+  color: `${vars.textSoft} !important` as unknown as string,
+  border: `1px solid ${vars.surfaceHigher}`,
   ":hover": {
-    transform: "translateY(-1px)",
-    boxShadow: `0 4px 6px color-mix(in srgb, ${vars.accent} 30%, transparent)`,
     background: vars.accentAlt,
-    color: vars.bg,
+    color: `${vars.bg} !important` as unknown as string,
+    borderColor: vars.accentAlt,
   },
 });
 
@@ -392,20 +385,19 @@ export const searchContainer = style({
 export const searchInput = style({
   width: "100%",
   padding: "0.75rem 1rem 0.75rem 3rem",
-  borderRadius: "0.5rem",
-  border: `1px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   backgroundColor: vars.surface,
   color: vars.text,
   fontFamily: FONT_COMIC,
   fontSize: "0.875rem",
-  transition: "all 0.2s ease",
+  transition: "border-color 0.15s ease",
   ":focus": {
     outline: "none",
     borderColor: vars.accent,
-    boxShadow: `0 0 0 2px color-mix(in srgb, ${vars.accent} 20%, transparent)`,
   },
   "::placeholder": {
-    color: vars.textMuted,
+    color: vars.textDim,
   },
 });
 
@@ -438,18 +430,20 @@ export const searchClear = style({
 /* Filter buttons */
 export const filterButton = style({
   padding: "0.5rem 1rem",
-  borderRadius: "0.5rem",
-  transition: "all 0.2s ease",
+  borderRadius: 0,
+  transition: "background-color 0.15s ease, color 0.15s ease",
   fontFamily: FONT_COMIC,
-  fontWeight: 600,
-  fontSize: "0.875rem",
+  fontWeight: 700,
+  fontSize: "0.75rem",
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
   cursor: "pointer",
-  border: `1px solid ${vars.surface}`,
+  border: `1px solid ${vars.surfaceHigher}`,
   backgroundColor: vars.surface,
-  color: vars.text,
+  color: vars.textSoft,
   ":hover": {
-    backgroundColor: vars.accentAlt,
-    color: vars.bg,
+    backgroundColor: vars.surfaceHi,
+    color: vars.text,
     borderColor: vars.accent,
   },
 });
@@ -472,41 +466,34 @@ export const frontingGlow = style({
 });
 
 globalStyle(`${frontingGlow} a`, {
-  background:
-    "linear-gradient(135deg, color-mix(in srgb, var(--member-color) 15%, transparent) 0%, color-mix(in srgb, var(--member-color) 5%, transparent) 100%)",
-  border: "2px solid color-mix(in srgb, var(--member-color) 50%, transparent)",
-  boxShadow:
-    "0 0 20px color-mix(in srgb, var(--member-color) 30%, transparent), 0 0 40px color-mix(in srgb, var(--member-color) 20%, transparent), inset 0 0 20px color-mix(in srgb, var(--member-color) 10%, transparent)",
+  background: "color-mix(in srgb, var(--member-color) 8%, transparent)",
+  border: "2px solid var(--member-color)",
+  boxShadow: "3px 3px 0 var(--member-color)",
 });
 
 globalStyle(`${frontingGlow} a:hover`, {
-  borderColor: "color-mix(in srgb, var(--member-color) 80%, transparent)",
-  boxShadow:
-    "0 0 30px color-mix(in srgb, var(--member-color) 50%, transparent), 0 0 60px color-mix(in srgb, var(--member-color) 30%, transparent), inset 0 0 30px color-mix(in srgb, var(--member-color) 15%, transparent)",
+  background: "color-mix(in srgb, var(--member-color) 14%, transparent)",
 });
 
 globalStyle(`${frontingGlow} img`, {
   borderColor: "var(--member-color)",
-  boxShadow: "0 0 15px color-mix(in srgb, var(--member-color) 40%, transparent)",
+  boxShadow: "2px 2px 0 var(--member-color)",
 });
 
 globalStyle(`${frontingGlow} a::before`, {
   content: '"FRONTING"',
   position: "absolute",
-  top: "-8px",
-  left: "50%",
-  transform: "translateX(-50%)",
+  top: "-1px",
+  left: "-1px",
   background: "var(--member-color)",
-  color: "white",
-  fontSize: "0.65rem",
+  color: "black",
+  fontSize: "0.6rem",
   padding: "0.15rem 0.5rem",
-  borderRadius: "0.25rem",
+  borderRadius: 0,
   fontWeight: 700,
-  letterSpacing: "0.5px",
+  letterSpacing: "0.05em",
   fontFamily: FONT_COMIC,
-  boxShadow: "0 2px 8px color-mix(in srgb, var(--member-color) 40%, transparent)",
   zIndex: 10,
-  textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
 });
 
 /* Utility */
