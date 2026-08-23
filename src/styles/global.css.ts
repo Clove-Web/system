@@ -7,14 +7,35 @@
  * app's src/css/main.css + fonts.css to vanilla-extract globalStyle calls.
  */
 
-import { globalStyle } from "@vanilla-extract/css";
+import { globalFontFace, globalStyle } from "@vanilla-extract/css";
 import { vars } from "./theme.css";
 
 /* ============================================================================
-   FONTS — IBM Plex Mono, loaded via the Google Fonts <link> in layout.tsx
-   (the terminal/clunky redesign replaced the old self-hosted Comic Code face)
+   FONTS — Comic Code (kept through the terminal/clunky redesign — it's a
+   paid font, so the look changed shape/colour but not the typeface)
    ============================================================================ */
-const mono = "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
+const comic = "Comic Code";
+
+globalFontFace(comic, {
+  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Regular.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Regular.woff') format('woff')",
+  fontWeight: 400,
+  fontStyle: "normal",
+});
+globalFontFace(comic, {
+  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Italic.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Italic.woff') format('woff')",
+  fontWeight: 400,
+  fontStyle: "italic",
+});
+globalFontFace(comic, {
+  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Medium.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Medium.woff') format('woff')",
+  fontWeight: 500,
+  fontStyle: "normal",
+});
+globalFontFace(comic, {
+  src: "url('https://m.doughmination.gay/f/Comic-Code/woff2/ComicCode-Bold.woff2') format('woff2'), url('https://m.doughmination.gay/f/Comic-Code/woff/ComicCode-Bold.woff') format('woff')",
+  fontWeight: 700,
+  fontStyle: "normal",
+});
 
 /* ============================================================================
    GLOBAL RESET & BASE STYLES
@@ -36,7 +57,7 @@ globalStyle("html", {
 });
 
 globalStyle("body", {
-  fontFamily: mono,
+  fontFamily: `'${comic}', sans-serif`,
   background: vars.bg,
   color: vars.text,
   minHeight: "100vh",
@@ -46,7 +67,7 @@ globalStyle("body", {
 globalStyle(
   "h1, h2, h3, h4, h5, h6, label, input, select, textarea, button",
   {
-    fontFamily: mono,
+    fontFamily: `'${comic}', cursive`,
   },
 );
 

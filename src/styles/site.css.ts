@@ -16,9 +16,8 @@ const tablet = "screen and (min-width: 641px) and (max-width: 1024px)";
 const ultrawide = "screen and (min-width: 1920px)";
 
 // No per-flavor font token in the new theme contract — same face across
-// every flavor, so it just lives here as a plain constant. Kept its old name
-// (see theme.css.ts) but now points at IBM Plex Mono.
-const FONT_COMIC = "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
+// every flavor, so it just lives here as a plain constant.
+const FONT_COMIC = "'Comic Code', cursive";
 
 export const fontComic = style({
   fontFamily: FONT_COMIC,
