@@ -419,8 +419,8 @@ export const searchClear = style({
   color: vars.textMuted,
   cursor: "pointer",
   padding: "0.25rem",
-  borderRadius: "0.25rem",
-  transition: "all 0.2s ease",
+  borderRadius: 0,
+  transition: "color 0.15s ease, background-color 0.15s ease",
   ":hover": {
     color: vars.text,
     backgroundColor: vars.surface,

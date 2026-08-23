@@ -94,11 +94,11 @@ globalStyle("html ::-webkit-scrollbar", {
 });
 globalStyle("html ::-webkit-scrollbar-track", {
   background: vars.bgRaised,
-  borderRadius: "6px",
+  borderRadius: 0,
 });
 globalStyle("html ::-webkit-scrollbar-thumb", {
   background: vars.accent,
-  borderRadius: "6px",
+  borderRadius: 0,
   border: `2px solid ${vars.bgRaised}`,
   transition: "background-color 0.2s ease",
 });

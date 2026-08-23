@@ -91,37 +91,43 @@ export const avatarRelative = style({ position: "relative" });
 export const avatar = style({
   width: "5rem",
   height: "5rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   objectFit: "cover",
-  border: `2px solid ${vars.surface}`,
+  border: `2px solid ${vars.surfaceHigher}`,
 });
 
 export const avatarFallback = style({
   width: "5rem",
   height: "5rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   backgroundColor: vars.surface,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: `2px solid ${vars.surface}`,
+  border: `2px solid ${vars.surfaceHigher}`,
 });
 
-export const avatarFallbackEmoji = style({ fontSize: "1.5rem" });
+export const avatarFallbackEmoji = style({
+  width: "1.5rem",
+  height: "1.5rem",
+  color: vars.textDim,
+});
 
 export const avatarCheck = style({
   position: "absolute",
   bottom: "-0.25rem",
   right: "-0.25rem",
   backgroundColor: vars.accent,
-  color: vars.bg,
-  borderRadius: "9999px",
+  color: vars.bgDeep,
+  border: `1px solid ${vars.text}`,
+  borderRadius: 0,
   width: "1.5rem",
   height: "1.5rem",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: "0.75rem",
+  fontWeight: 700,
 });
 
 export const avatarControls = style({

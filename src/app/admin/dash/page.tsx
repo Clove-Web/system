@@ -13,6 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import * as s from "@/styles/admin.css";
+import {
+  ArrowRepeat,
+  Activity,
+  ChatSquareText,
+  Tag,
+  Flag,
+  CircleHalf,
+  Hdd,
+} from "react-bootstrap-icons";
 
 const AdminDash: React.FC = () => {
   const client = useDoughminationClient();
@@ -25,43 +34,43 @@ const AdminDash: React.FC = () => {
     {
       path: "/admin/switch",
       label: "Switch Manager",
-      icon: "🔄",
+      icon: ArrowRepeat,
       desc: "Manage fronting members"
     },
     {
       path: "/admin/mental",
       label: "Mental Health",
-      icon: "🧠",
+      icon: Activity,
       desc: "Update mental state"
     },
     {
       path: "/admin/status",
       label: "Status Manager",
-      icon: "💬",
+      icon: ChatSquareText,
       desc: "Set member statuses"
     },
     {
       path: "/admin/tags",
       label: "Tag Manager",
-      icon: "🏷️",
+      icon: Tag,
       desc: "Manage member tags"
     },
     {
       path: "/admin/pride",
       label: "Pride Manager",
-      icon: "🏳️‍🌈",
+      icon: Flag,
       desc: "Set member pride identities"
     },
     {
       path: "/admin/relationships",
       label: "Relationships",
-      icon: "💞",
+      icon: CircleHalf,
       desc: "Map who is dating who",
     },
     {
       path: "https://doughmination.uk/docs",
       label: "API Endpoints",
-      icon: "🔌",
+      icon: Hdd,
       desc: "View API reference",
       external: true,
     },
@@ -132,7 +141,7 @@ const AdminDash: React.FC = () => {
         <div className={s.dangerBanner}>
           <div className={s.dangerBannerRow}>
             <div className={s.flexGrow}>
-              <h3 className={s.dangerBannerTitle}>🔄 Force Refresh All Clients</h3>
+              <h3 className={s.dangerBannerTitle}>[ danger ] Force Refresh All Clients</h3>
               <p className={s.dangerBannerText}>
                 Send a refresh command to all users currently viewing the website. This will
                 immediately reload their browsers.
@@ -144,7 +153,7 @@ const AdminDash: React.FC = () => {
               disabled={refreshing}
               className={s.noWrap}
             >
-              {refreshing ? "Sending..." : "🔄 Refresh All"}
+              {refreshing ? "Sending..." : "Refresh All"}
             </Button>
           </div>
         </div>
@@ -155,7 +164,9 @@ const AdminDash: React.FC = () => {
             page.external ? (
               <a key={page.path} href={page.path} target="_blank" rel="noopener noreferrer">
                 <div className={s.dashCard}>
-                  <span className={s.dashIcon}>{page.icon}</span>
+                  <div className={s.dashIconBlock}>
+                    <page.icon className={s.dashIcon} />
+                  </div>
                   <h3 className={s.dashLabel}>{page.label}</h3>
                   <p className={s.dashDesc}>{page.desc}</p>
                 </div>
@@ -163,7 +174,9 @@ const AdminDash: React.FC = () => {
             ) : (
               <Link key={page.path} href={page.path}>
                 <div className={s.dashCard}>
-                  <span className={s.dashIcon}>{page.icon}</span>
+                  <div className={s.dashIconBlock}>
+                    <page.icon className={s.dashIcon} />
+                  </div>
                   <h3 className={s.dashLabel}>{page.label}</h3>
                   <p className={s.dashDesc}>{page.desc}</p>
                 </div>

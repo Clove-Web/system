@@ -102,11 +102,10 @@ export const overviewNote = style({
 });
 
 export const tooltipBox = style({
-  backgroundColor: vars.bg,
-  border: `1px solid ${vars.surface}`,
-  borderRadius: "0.5rem",
+  backgroundColor: vars.bgDeep,
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
   padding: "0.75rem",
-  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
 });
 
 export const tooltipName = style({
@@ -133,7 +132,8 @@ export const fronterRow = style({
   gap: "0.75rem",
   padding: "0.75rem",
   backgroundColor: vars.surface,
-  borderRadius: "0.5rem",
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
 });
 
 export const fronterRank = style({
@@ -142,9 +142,9 @@ export const fronterRank = style({
   justifyContent: "center",
   width: "2rem",
   height: "2rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   backgroundColor: vars.accent,
-  color: vars.bg,
+  color: vars.bgDeep,
   fontWeight: 700,
   fontFamily: vars.fontComic,
   fontSize: "0.875rem",
@@ -153,7 +153,8 @@ export const fronterRank = style({
 export const fronterAvatar = style({
   width: "2.5rem",
   height: "2.5rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   objectFit: "cover",
 });
 
@@ -185,7 +186,8 @@ export const progressWrap = style({
 export const progressTrack = style({
   height: "0.5rem",
   backgroundColor: vars.bg,
-  borderRadius: "9999px",
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
   overflow: "hidden",
 });
 

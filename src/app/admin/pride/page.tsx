@@ -42,9 +42,9 @@ const PrideSwatch: React.FC<{ label: string }> = ({ label }) => {
         display: "inline-block",
         width: "0.9rem",
         height: "0.9rem",
-        borderRadius: "3px",
+        borderRadius: 0,
         background,
-        border: "1px solid rgba(0,0,0,0.2)",
+        border: "1px solid rgba(0,0,0,0.35)",
       }}
     />
   );

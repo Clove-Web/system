@@ -9,6 +9,7 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserInfo } from "@doughmination/react-api";
+import { ShieldLockFill, ArrowLeft } from "react-bootstrap-icons";
 import * as s from "./components.css";
 
 interface ProtectedRouteProps {
@@ -77,14 +78,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return null;
   }
 
-  const denied = (emoji: string, title: string, text: string) => (
+  const denied = (title: string, text: string) => (
     <div className={s.guardPage}>
       <div className={s.guardCard}>
-        <div className={s.guardEmoji}>{emoji}</div>
+        <div className={s.guardIconBlock}>
+          <ShieldLockFill className={s.guardIcon} />
+        </div>
         <h1 className={s.guardTitle}>{title}</h1>
         <p className={s.guardText}>{text}</p>
         <button onClick={() => window.history.back()} className={s.guardBack}>
-          ← Go Back
+          <ArrowLeft className={s.guardBackIcon} />
+          Go Back
         </button>
       </div>
     </div>
@@ -92,17 +96,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check owner permission (owner has all permissions)
   if (ownerRequired && !isOwner) {
-    return denied("🔒", "Owner Access Required", "This area is restricted to system owners only.");
+    return denied("Owner Access Required", "This area is restricted to system owners only.");
   }
 
   // Check admin permission (admin and owner have admin access)
   if (adminRequired && !isAdmin && !isOwner) {
-    return denied("🔒", "Admin Access Required", "This area is restricted to administrators only.");
+    return denied("Admin Access Required", "This area is restricted to administrators only.");
   }
 
   // Check pet permission
   if (petRequired && !isPet && !isOwner) {
-    return denied("🐾", "Pet Access Required", "This area is restricted to pets only.");
+    return denied("Pet Access Required", "This area is restricted to pets only.");
   }
 
   return <>{children}</>;

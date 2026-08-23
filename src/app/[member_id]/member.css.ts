@@ -45,22 +45,19 @@ export const avatarBlock = style({
   display: "inline-block",
 });
 
-/* Thought bubble */
+/* Status tag — plain bordered box below the avatar, not a floating bubble */
 export const bubbleWrap = style({
-  position: "absolute",
-  top: "-5rem",
-  left: "50%",
-  transform: "translateX(-50%)",
-  zIndex: 20,
+  marginTop: "0.75rem",
+  display: "flex",
+  justifyContent: "center",
 });
 
 export const bubble = style({
   position: "relative",
-  backgroundColor: vars.bg,
-  border: `2px solid ${vars.surface}`,
-  borderRadius: "30px",
+  backgroundColor: vars.bgDeep,
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
   padding: "0.5rem 1rem",
-  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
   maxWidth: "200px",
 });
 
@@ -82,61 +79,15 @@ export const bubbleText = style({
   whiteSpace: "nowrap",
 });
 
-const dotBase = {
-  position: "absolute",
-  left: "50%",
-} as const;
-
-export const bubbleDot1Wrap = style({
-  ...dotBase,
-  bottom: "-1.25rem",
-  transform: "translateX(calc(-50% + 0.5rem))",
-});
-export const bubbleDot2Wrap = style({
-  ...dotBase,
-  bottom: "-2rem",
-  transform: "translateX(calc(-50% + 1rem))",
-});
-export const bubbleDot3Wrap = style({
-  ...dotBase,
-  bottom: "-2.5rem",
-  transform: "translateX(calc(-50% + 1.25rem))",
-});
-
-export const bubbleDot1 = style({
-  width: "0.75rem",
-  height: "0.75rem",
-  backgroundColor: vars.bg,
-  border: `2px solid ${vars.surface}`,
-  borderRadius: "9999px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-});
-export const bubbleDot2 = style({
-  width: "0.5rem",
-  height: "0.5rem",
-  backgroundColor: vars.bg,
-  border: `2px solid ${vars.surface}`,
-  borderRadius: "9999px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-});
-export const bubbleDot3 = style({
-  width: "0.375rem",
-  height: "0.375rem",
-  backgroundColor: vars.bg,
-  border: `1px solid ${vars.surface}`,
-  borderRadius: "9999px",
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-});
-
 export const avatar = style({
   width: "8rem",
   height: "8rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   margin: "0 auto",
   objectFit: "cover",
-  borderWidth: "4px",
+  borderWidth: "2px",
   borderStyle: "solid",
-  transition: "all 0.15s ease",
+  transition: "filter 0.15s ease",
   display: "block",
 });
 
@@ -160,10 +111,13 @@ export const content = style({
 });
 
 export const sectionTitle = style({
-  fontSize: "1.125rem",
+  fontSize: "0.75rem",
   fontFamily: vars.fontComic,
-  marginBottom: "0.5rem",
-  fontWeight: 600,
+  marginBottom: "0.625rem",
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  color: vars.textDim,
 });
 
 export const description = style({

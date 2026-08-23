@@ -11,7 +11,7 @@ const tint = (color: string, pct: number) =>
   `color-mix(in srgb, ${color} ${pct}%, ${vars.bg})`;
 
 export const stateCardBase = style({
-  borderWidth: "2px",
+  borderWidth: "1px",
 });
 
 export const stateSafe = style({
@@ -46,7 +46,7 @@ export const currentRow = style({
   marginBottom: "0.75rem",
 });
 
-export const currentIcon = style({ fontSize: "2.25rem" });
+export const currentIcon = style({ width: "2rem", height: "2rem", flexShrink: 0 });
 
 export const currentLabel = style({
   fontFamily: vars.fontComic,
@@ -65,9 +65,9 @@ export const currentNotes = style({
 export const select = style({
   width: "100%",
   padding: "0.5rem",
-  border: `1px solid ${vars.surface}`,
-  borderRadius: "0.375rem",
-  backgroundColor: vars.bg,
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
+  backgroundColor: vars.surface,
   color: vars.text,
   fontFamily: vars.fontComic,
 });
@@ -75,9 +75,9 @@ export const select = style({
 export const textarea = style({
   width: "100%",
   padding: "0.5rem",
-  border: `1px solid ${vars.surface}`,
-  borderRadius: "0.375rem",
-  backgroundColor: vars.bg,
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
+  backgroundColor: vars.surface,
   color: vars.text,
   fontFamily: vars.fontComic,
   resize: "none",

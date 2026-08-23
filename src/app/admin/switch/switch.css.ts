@@ -61,12 +61,12 @@ export const memberOption = style({
   alignItems: "center",
   gap: "0.75rem",
   padding: "0.75rem",
-  borderRadius: "0.5rem",
-  border: `2px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   cursor: "pointer",
-  transition: "all 0.15s ease",
+  transition: "border-color 0.15s ease, background-color 0.15s ease",
   ":hover": {
-    borderColor: `color-mix(in srgb, ${vars.accent} 50%, transparent)`,
+    borderColor: vars.accent,
   },
 });
 
@@ -76,13 +76,16 @@ export const memberOptionSelected = style({
 });
 
 export const tagChip = style({
-  fontSize: "0.75rem",
+  fontSize: "0.6875rem",
   padding: "0.125rem 0.5rem",
-  borderRadius: "9999px",
-  backgroundColor: vars.surface,
-  color: vars.text,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
+  backgroundColor: "transparent",
+  color: vars.textSoft,
   fontFamily: vars.fontComic,
-  fontWeight: 600,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
 });
 
 export const tagRow = style({
@@ -107,7 +110,8 @@ export const sideRow = style({
 export const sideAvatar = style({
   width: "2rem",
   height: "2rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   objectFit: "cover",
 });
 

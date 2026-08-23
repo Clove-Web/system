@@ -76,11 +76,11 @@ export const dashGrid = style({
 
 export const dashCard = style({
   padding: "1.5rem",
-  borderRadius: "0.5rem",
-  border: `2px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   backgroundColor: vars.bgRaised,
   color: vars.text,
-  transition: "all 0.15s ease",
+  transition: "border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease",
   cursor: "pointer",
   textAlign: "center",
   height: "100%",
@@ -92,17 +92,24 @@ export const dashCard = style({
   ":hover": {
     borderColor: vars.accent,
     backgroundColor: vars.surfaceHi,
+    transform: "translate(-1px, -1px)",
   },
 });
 
-export const dashIcon = style({
-  fontSize: "2.25rem",
-  display: "block",
+export const dashIconBlock = style({
+  width: "2.75rem",
+  height: "2.75rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: `2px solid ${vars.accent}`,
   marginBottom: "0.75rem",
-  transition: "transform 0.15s ease",
-  selectors: {
-    [`${dashCard}:hover &`]: { transform: "scale(1.1)" },
-  },
+});
+
+export const dashIcon = style({
+  width: "1.25rem",
+  height: "1.25rem",
+  color: vars.accent,
 });
 
 export const dashLabel = style({
@@ -172,8 +179,8 @@ export const userRow = style({
   gap: "0.75rem",
   padding: "1rem",
   backgroundColor: vars.surface,
-  borderRadius: "0.5rem",
-  border: `1px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
 });
 
 export const userRowCurrent = style({
@@ -183,7 +190,8 @@ export const userRowCurrent = style({
 export const userAvatar = style({
   width: "3rem",
   height: "3rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   objectFit: "cover",
   flexShrink: 0,
 });
@@ -221,8 +229,8 @@ export const smallBadge = style({
 export const editPanel = style({
   padding: "1rem",
   backgroundColor: vars.bg,
-  borderRadius: "0.5rem",
-  border: `1px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
@@ -238,7 +246,8 @@ export const statsGrid = style({
 export const statBox = style({
   padding: "1rem",
   backgroundColor: vars.surface,
-  borderRadius: "0.5rem",
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
 });
 
 export const statLabel = style({
@@ -270,8 +279,8 @@ export const memberRow = style({
   gap: "0.75rem",
   padding: "0.75rem",
   backgroundColor: vars.surface,
-  borderRadius: "0.5rem",
-  border: `1px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   transition: "border-color 0.15s ease",
   cursor: "pointer",
   ":hover": { borderColor: vars.accent },
@@ -285,14 +294,16 @@ export const memberRowSelected = style({
 export const memberAvatarSm = style({
   width: "1.5rem",
   height: "1.5rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   objectFit: "cover",
 });
 
 export const memberAvatarMd = style({
   width: "2.5rem",
   height: "2.5rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
   objectFit: "cover",
 });
 
@@ -347,12 +358,12 @@ export const emojiButton = style({
   width: "2rem",
   height: "2rem",
   fontSize: "1.25rem",
-  borderRadius: "0.25rem",
-  border: "none",
+  borderRadius: 0,
+  border: `1px solid transparent`,
   background: "transparent",
   cursor: "pointer",
-  transition: "background-color 0.15s ease",
-  ":hover": { backgroundColor: vars.surfaceHi },
+  transition: "background-color 0.15s ease, border-color 0.15s ease",
+  ":hover": { backgroundColor: vars.surfaceHi, borderColor: vars.surfaceHigher },
 });
 
 export const emojiPickerRow = style({
@@ -367,8 +378,8 @@ export const statusBox = style({
   marginTop: "1rem",
   padding: "0.75rem",
   backgroundColor: vars.surface,
-  borderRadius: "0.5rem",
-  border: `1px solid ${vars.surface}`,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
 });
 
 export const statusBoxText = style({
@@ -390,13 +401,16 @@ export const chip = style({
   display: "inline-flex",
   alignItems: "center",
   gap: "0.375rem",
-  fontSize: "0.75rem",
+  fontSize: "0.6875rem",
   padding: "0.25rem 0.625rem",
-  borderRadius: "9999px",
-  backgroundColor: vars.surface,
-  color: vars.text,
+  borderRadius: 0,
+  border: `1px solid ${vars.surfaceHigher}`,
+  backgroundColor: "transparent",
+  color: vars.textSoft,
   fontFamily: vars.fontComic,
-  fontWeight: 600,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
 });
 
 export const chipRemove = style({
@@ -412,9 +426,9 @@ export const chipRemove = style({
 
 /* Force refresh banner */
 export const dangerBanner = style({
-  backgroundColor: `color-mix(in srgb, ${vars.danger} 10%, transparent)`,
-  border: `2px solid ${vars.danger}`,
-  borderRadius: "0.5rem",
+  backgroundColor: `color-mix(in srgb, ${vars.danger} 8%, transparent)`,
+  border: `1px solid ${vars.danger}`,
+  borderRadius: 0,
   padding: "1rem",
 });
 

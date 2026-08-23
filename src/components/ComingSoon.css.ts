@@ -55,7 +55,9 @@ export const iconWrap = style({
 });
 
 export const icon = style({
-  fontSize: "6rem",
+  width: "5rem",
+  height: "5rem",
+  color: vars.accent,
   animation: `${bounce} 1s infinite`,
 });
 
@@ -117,21 +119,22 @@ export const progressActive = style({
 export const progressTrack = style({
   width: "100%",
   backgroundColor: vars.surface,
-  borderRadius: "9999px",
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
   height: "0.75rem",
   overflow: "hidden",
 });
 
 export const progressBar = style({
   height: "100%",
-  background: `linear-gradient(to right, ${vars.accent}, ${vars.accent})`,
-  borderRadius: "9999px",
+  backgroundColor: vars.accent,
   animation: `${pulse} 2s cubic-bezier(0.4, 0, 0.6, 1) infinite`,
 });
 
 export const featuresBox = style({
-  backgroundColor: `color-mix(in srgb, ${vars.surface} 50%, transparent)`,
-  borderRadius: "0.5rem",
+  backgroundColor: vars.surface,
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
   padding: "1.5rem",
   display: "flex",
   flexDirection: "column",
@@ -162,7 +165,12 @@ export const featureItem = style({
   gap: "0.5rem",
 });
 
-export const featureIcon = style({ fontSize: "1.25rem" });
+export const featureIcon = style({
+  width: "1.125rem",
+  height: "1.125rem",
+  flexShrink: 0,
+  color: vars.accent,
+});
 
 export const featureText = style({
   fontSize: "0.875rem",

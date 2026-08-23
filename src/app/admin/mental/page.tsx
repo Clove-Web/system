@@ -21,6 +21,13 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { cn } from "@/lib/utils";
 import * as s from "@/styles/admin.css";
 import * as m from "./mental.css";
+import {
+  CheckCircleFill,
+  ExclamationTriangleFill,
+  ExclamationCircleFill,
+  ExclamationOctagonFill,
+  ShieldFillExclamation,
+} from "react-bootstrap-icons";
 
 const MentalHealthManager: React.FC = () => {
   // Live current state; the socket keeps this current after any admin saves.
@@ -50,31 +57,31 @@ const MentalHealthManager: React.FC = () => {
     {
       value: "safe",
       label: "Safe",
-      icon: "✅",
+      icon: CheckCircleFill,
       className: m.stateSafe
     },
     {
       value: "unstable",
       label: "Unstable",
-      icon: "⚠️",
+      icon: ExclamationTriangleFill,
       className: m.stateUnstable
     },
     {
       value: "idealizing",
       label: "Idealizing",
-      icon: "❗",
+      icon: ExclamationCircleFill,
       className: m.stateIdealizing
     },
     {
       value: "self-harming",
       label: "Self-Harming",
-      icon: "🚨",
+      icon: ExclamationOctagonFill,
       className: m.stateSelfHarming
     },
     {
       value: "highly at risk",
       label: "Highly At Risk",
-      icon: "⛔",
+      icon: ShieldFillExclamation,
       className: m.stateHighRisk
     },
   ];
@@ -146,25 +153,28 @@ const MentalHealthManager: React.FC = () => {
         )}
 
         {/* Current Mental State Display */}
-        {mentalState && getCurrentStateConfig() && (
-          <Card className={cn(m.stateCardBase, getCurrentStateConfig()?.className)}>
-            <CardHeader>
-              <CardTitle>Current Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={m.currentRow}>
-                <span className={m.currentIcon}>{getCurrentStateConfig()?.icon}</span>
-                <div>
-                  <p className={m.currentLabel}>{getCurrentStateConfig()?.label}</p>
-                  {mentalState.notes && <p className={m.currentNotes}>{mentalState.notes}</p>}
+        {mentalState && getCurrentStateConfig() && (() => {
+          const StateIcon = getCurrentStateConfig()?.icon;
+          return (
+            <Card className={cn(m.stateCardBase, getCurrentStateConfig()?.className)}>
+              <CardHeader>
+                <CardTitle>Current Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={m.currentRow}>
+                  {StateIcon && <StateIcon className={m.currentIcon} />}
+                  <div>
+                    <p className={m.currentLabel}>{getCurrentStateConfig()?.label}</p>
+                    {mentalState.notes && <p className={m.currentNotes}>{mentalState.notes}</p>}
+                  </div>
                 </div>
-              </div>
-              <p className={s.smallMuted}>
-                Last updated: {new Date(mentalState.updated_at).toLocaleString()}
-              </p>
-            </CardContent>
-          </Card>
-        )}
+                <p className={s.smallMuted}>
+                  Last updated: {new Date(mentalState.updated_at).toLocaleString()}
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* Update Form */}
         <Card>
@@ -185,7 +195,7 @@ const MentalHealthManager: React.FC = () => {
                 <option value="">-- Select mental state --</option>
                 {mentalStateOptions.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.icon} {option.label}
+                    {option.label}
                   </option>
                 ))}
               </select>

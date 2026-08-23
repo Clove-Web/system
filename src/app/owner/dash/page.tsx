@@ -11,13 +11,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import * as s from "@/styles/admin.css";
+import { People } from "react-bootstrap-icons";
 
 const OwnerDash: React.FC = () => {
   const ownerPages = [
     {
       path: "/owner/users",
       label: "User Management",
-      icon: "👤",
+      icon: People,
       desc: "Manage all users"
     },
   ];
@@ -51,7 +52,9 @@ const OwnerDash: React.FC = () => {
           {ownerPages.map((page) => (
             <Link key={page.path} href={page.path}>
               <div className={s.dashCard}>
-                <span className={s.dashIcon}>{page.icon}</span>
+                <div className={s.dashIconBlock}>
+                  <page.icon className={s.dashIcon} />
+                </div>
                 <h3 className={s.dashLabel}>{page.label}</h3>
                 <p className={s.dashDesc}>{page.desc}</p>
               </div>

@@ -38,9 +38,9 @@ export const statusFull = style({
   alignItems: "flex-start",
   gap: "0.5rem",
   padding: "0.75rem",
-  borderRadius: "0.5rem",
-  backgroundColor: `color-mix(in srgb, ${vars.surface} 50%, transparent)`,
-  border: `1px solid ${vars.surface}`,
+  borderRadius: 0,
+  backgroundColor: vars.surface,
+  border: `1px solid ${vars.surfaceHigher}`,
 });
 
 export const statusFullEmoji = style({
@@ -116,7 +116,21 @@ export const guardCard = style({
   gap: "1rem",
 });
 
-export const guardEmoji = style({ fontSize: "3.75rem" });
+export const guardIconBlock = style({
+  width: "4rem",
+  height: "4rem",
+  margin: "0 auto",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: `2px solid ${vars.danger}`,
+});
+
+export const guardIcon = style({
+  width: "1.75rem",
+  height: "1.75rem",
+  color: vars.danger,
+});
 
 export const guardTitle = style({
   fontSize: "1.5rem",
@@ -131,11 +145,23 @@ export const guardText = style({
 });
 
 export const guardBack = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.375rem",
   color: vars.accent,
   fontFamily: vars.fontComic,
-  fontWeight: 600,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+  fontSize: "0.8125rem",
   background: "none",
   border: "none",
   cursor: "pointer",
-  ":hover": { textDecoration: "underline" },
+  margin: "0 auto",
+  ":hover": { color: vars.accentAlt },
+});
+
+export const guardBackIcon = style({
+  width: "0.75rem",
+  height: "0.75rem",
 });

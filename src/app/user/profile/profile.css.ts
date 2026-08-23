@@ -63,26 +63,30 @@ export const avatarWrap = style({
 export const avatar = style({
   width: "6rem",
   height: "6rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   margin: "0 auto",
   objectFit: "cover",
-  border: `2px solid ${vars.surface}`,
+  border: `2px solid ${vars.surfaceHigher}`,
   display: "block",
 });
 
 export const avatarFallback = style({
   width: "6rem",
   height: "6rem",
-  borderRadius: "9999px",
+  borderRadius: 0,
   backgroundColor: vars.surface,
   margin: "0 auto 1rem",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: `2px solid ${vars.surface}`,
+  border: `2px solid ${vars.surfaceHigher}`,
 });
 
-export const avatarFallbackEmoji = style({ fontSize: "2.25rem" });
+export const avatarFallbackEmoji = style({
+  width: "2rem",
+  height: "2rem",
+  color: vars.textDim,
+});
 
 export const displayName = style({
   fontSize: "1.25rem",

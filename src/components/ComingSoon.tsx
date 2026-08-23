@@ -13,18 +13,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import * as s from "./ComingSoon.css";
+import {
+  ConeStriped,
+  Stars,
+  Palette,
+  LightningChargeFill,
+  ShieldCheck,
+  type Icon,
+} from "react-bootstrap-icons";
 
 interface ComingSoonProps {
   title?: string;
   description?: string;
-  icon?: string;
+  icon?: Icon;
   showBackButton?: boolean;
 }
 
 const ComingSoon: React.FC<ComingSoonProps> = ({
   title,
   description,
-  icon = "🚧",
+  icon: IconComponent = ConeStriped,
   showBackButton = true,
 }) => {
   const pathname = usePathname();
@@ -55,7 +63,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
           <CardHeader className={cn(s.headerCenter)}>
             {/* Animated Icon */}
             <div className={s.iconWrap}>
-              <div className={s.icon}>{icon}</div>
+              <IconComponent className={s.icon} />
             </div>
 
             {/* Title */}
@@ -85,19 +93,19 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
               <h3 className={s.featuresTitle}>What to Expect</h3>
               <div className={s.featuresGrid}>
                 <div className={s.featureItem}>
-                  <span className={s.featureIcon}>✨</span>
+                  <Stars className={s.featureIcon} />
                   <span className={s.featureText}>New features and functionality</span>
                 </div>
                 <div className={s.featureItem}>
-                  <span className={s.featureIcon}>🎨</span>
+                  <Palette className={s.featureIcon} />
                   <span className={s.featureText}>Beautiful, intuitive design</span>
                 </div>
                 <div className={s.featureItem}>
-                  <span className={s.featureIcon}>⚡</span>
+                  <LightningChargeFill className={s.featureIcon} />
                   <span className={s.featureText}>Fast and responsive</span>
                 </div>
                 <div className={s.featureItem}>
-                  <span className={s.featureIcon}>🔒</span>
+                  <ShieldCheck className={s.featureIcon} />
                   <span className={s.featureText}>Secure and reliable</span>
                 </div>
               </div>

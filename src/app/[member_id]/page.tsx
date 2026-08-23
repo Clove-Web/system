@@ -104,10 +104,6 @@ export default function MemberDetails() {
   const memberColor = normalizeColor(member.color);
   const borderColor = memberColor || "var(--accent)";
   const nameColor = readableOnDark(member.color, "var(--text)");
-  // Appending an alpha suffix only yields valid CSS for a hex literal.
-  const glow = memberColor
-    ? `${memberColor}40`
-    : "color-mix(in srgb, var(--accent) 25%, transparent)";
   const pronounColor = memberColor
     ? `${nameColor}cc`
     : "var(--text-muted)";
@@ -118,29 +114,6 @@ export default function MemberDetails() {
         <Card>
           <CardHeader className={s.headerCenter}>
             <div className={s.avatarBlock}>
-              {/* Status Bubble - Thought Bubble Style */}
-              {member.status && (
-                <div className={s.bubbleWrap}>
-                  <div className={s.bubble}>
-                    <div className={s.bubbleRow}>
-                      {member.status.emoji && (
-                        <span className={s.bubbleEmoji}>{member.status.emoji}</span>
-                      )}
-                      <span className={s.bubbleText}>{member.status.text}</span>
-                    </div>
-                    {/* Thought bubble circles - staggered diagonally toward avatar */}
-                    <div className={s.bubbleDot1Wrap}>
-                      <div className={s.bubbleDot1}></div>
-                    </div>
-                    <div className={s.bubbleDot2Wrap}>
-                      <div className={s.bubbleDot2}></div>
-                    </div>
-                    <div className={s.bubbleDot3Wrap}>
-                      <div className={s.bubbleDot3}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={member.avatar_url || FALLBACK_AVATAR}
@@ -148,7 +121,7 @@ export default function MemberDetails() {
                 className={s.avatar}
                 style={{
                   borderColor: borderColor,
-                  boxShadow: `0 0 20px ${glow}`,
+                  boxShadow: `4px 4px 0 ${borderColor}`,
                 }}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = FALLBACK_AVATAR;
@@ -170,6 +143,19 @@ export default function MemberDetails() {
               >
                 {member.pronouns}
               </p>
+            )}
+            {/* Status tag — plain bordered box, replaces the old thought bubble */}
+            {member.status && (
+              <div className={s.bubbleWrap}>
+                <div className={s.bubble}>
+                  <div className={s.bubbleRow}>
+                    {member.status.emoji && (
+                      <span className={s.bubbleEmoji}>{member.status.emoji}</span>
+                    )}
+                    <span className={s.bubbleText}>{member.status.text}</span>
+                  </div>
+                </div>
+              </div>
             )}
           </CardHeader>
           <CardContent className={s.content}>
@@ -238,11 +224,11 @@ export default function MemberDetails() {
                             display: "inline-block",
                             width: "0.8rem",
                             height: "0.8rem",
-                            borderRadius: "3px",
+                            borderRadius: 0,
                             marginRight: "0.4rem",
                             verticalAlign: "middle",
                             background: swatch,
-                            border: "1px solid rgba(0,0,0,0.2)",
+                            border: "1px solid rgba(0,0,0,0.35)",
                           }}
                         />
                         {identity}
@@ -271,8 +257,8 @@ export default function MemberDetails() {
                         alignItems: "center",
                         gap: "0.4rem",
                         padding: "0.25rem 0.6rem 0.25rem 0.3rem",
-                        borderRadius: "999px",
-                        border: "1px solid var(--border, rgba(255,255,255,0.15))",
+                        borderRadius: 0,
+                        border: "1px solid var(--surface-higher)",
                         textDecoration: "none",
                         color: "var(--text)",
                       }}
@@ -284,7 +270,7 @@ export default function MemberDetails() {
                         style={{
                           width: "1.5rem",
                           height: "1.5rem",
-                          borderRadius: "50%",
+                          borderRadius: 0,
                           objectFit: "cover",
                         }}
                         onError={(event) => {
@@ -311,7 +297,20 @@ export default function MemberDetails() {
                     : undefined
                 }
               >
-                <Link href="/">← Back to Members</Link>
+                <Link href="/">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.4}
+                    style={{ marginRight: "0.4rem", verticalAlign: "-1px" }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to Members
+                </Link>
               </Button>
             </div>
           </CardContent>

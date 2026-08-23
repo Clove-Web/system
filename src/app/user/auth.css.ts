@@ -29,10 +29,9 @@ export const card = style({
   maxWidth: "28rem",
   margin: "2.5rem auto 0",
   padding: "1.5rem",
-  border: `1px solid ${vars.surface}`,
-  borderRadius: "0.5rem",
-  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-  backgroundColor: vars.bg,
+  border: `1px solid ${vars.surfaceHigher}`,
+  borderRadius: 0,
+  backgroundColor: vars.bgRaised,
 });
 
 export const heading = style({
@@ -44,18 +43,20 @@ export const heading = style({
 });
 
 export const errorBox = style({
-  backgroundColor: `color-mix(in srgb, ${vars.danger} 15%, ${vars.bg})`,
+  backgroundColor: `color-mix(in srgb, ${vars.danger} 12%, ${vars.bg})`,
+  border: `1px solid ${vars.danger}`,
   color: vars.danger,
   padding: "0.75rem",
-  borderRadius: "0.375rem",
+  borderRadius: 0,
   marginBottom: "1rem",
 });
 
 export const successBox = style({
-  backgroundColor: `color-mix(in srgb, ${vars.success} 15%, ${vars.bg})`,
+  backgroundColor: `color-mix(in srgb, ${vars.success} 12%, ${vars.bg})`,
+  border: `1px solid ${vars.success}`,
   color: vars.success,
   padding: "0.75rem",
-  borderRadius: "0.375rem",
+  borderRadius: 0,
   marginBottom: "1rem",
 });
 
@@ -75,10 +76,10 @@ export const fieldLabel = style({
 
 export const textInput = style({
   width: "100%",
-  border: `1px solid ${vars.surface}`,
+  border: `1px solid ${vars.surfaceHigher}`,
   padding: "0.5rem",
-  borderRadius: "0.25rem",
-  backgroundColor: vars.bg,
+  borderRadius: 0,
+  backgroundColor: vars.surface,
   color: vars.text,
   fontFamily: vars.fontComic,
 });
@@ -117,24 +118,38 @@ export const mutedNote = style({
 });
 
 export const submitBtn = style({
-  display: "block",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "0.5rem",
   width: "100%",
   boxSizing: "border-box",
   textAlign: "center",
   textDecoration: "none",
-  backgroundColor: vars.info,
-  color: vars.bg,
+  backgroundColor: vars.accent,
+  color: vars.bgDeep,
   padding: "0.625rem 0.75rem",
-  borderRadius: "0.25rem",
-  border: "none",
+  borderRadius: 0,
+  border: `1px solid ${vars.text}`,
   cursor: "pointer",
+  fontWeight: 700,
+  fontSize: "0.8125rem",
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
   transition: "background-color 0.15s ease",
   fontFamily: vars.fontComic,
-  ":hover": { backgroundColor: vars.sapphire },
+  ":hover": { backgroundColor: vars.accentAlt },
   ":disabled": {
-    backgroundColor: `color-mix(in srgb, ${vars.info} 50%, ${vars.bg})`,
+    backgroundColor: vars.surfaceHigher,
+    color: vars.textDim,
+    borderColor: vars.surfaceHigher,
     cursor: "not-allowed",
   },
+});
+
+export const submitBtnIcon = style({
+  width: "0.9375rem",
+  height: "0.9375rem",
 });
 
 /** Vertical stack for standalone actions (e.g. the SSO sign-in button). */
