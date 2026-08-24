@@ -19,6 +19,7 @@ import {
 } from "@doughmination/react-api";
 import { Button } from "@/components/ui/button";
 import { cn, normalizeColor, readableOnDark } from "@/lib/utils";
+import { findPrideFlag, prideSwatchGradient } from "@/lib/pride";
 import * as site from "@/styles/site.css";
 import * as s from "@/app/home.css";
 import {
@@ -54,7 +55,10 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTagFilter, setCurrentTagFilter] = useState<string | null>(null);
+  const [currentIdentityFilter, setCurrentIdentityFilter] = useState<string | null>(null);
   const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersRef = React.useRef<HTMLDivElement>(null);
 
   // Live public data — seeded over REST, then kept current by the shared
   // socket (fronters + mental state are broadcast to every client, and the
@@ -79,6 +83,14 @@ export default function HomePage() {
     return Array.from(tags).sort((a, b) => a.localeCompare(b));
   }, [members]);
 
+  const availableIdentities = useMemo(() => {
+    const identities = new Set<string>();
+    members.forEach((m) => m.pride?.forEach((p) => identities.add(p)));
+    return Array.from(identities).sort((a, b) => a.localeCompare(b));
+  }, [members]);
+
+  const activeFilterCount = (currentTagFilter ? 1 : 0) + (currentIdentityFilter ? 1 : 0);
+
   const fronting = frontersQuery.data ?? null;
   const systemInfo = systemQuery.data ?? null;
   const loading =
@@ -90,6 +102,35 @@ export default function HomePage() {
   useEffect(() => {
     setToken(localStorage.getItem("token"));
   }, []);
+
+  // Seed the tag/identity filters from the URL so a shared link like
+  // /?tag=Genshin&identity=Transgender opens already filtered.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tag = params.get("tag");
+    const identity = params.get("identity");
+    if (tag) setCurrentTagFilter(tag);
+    if (identity) setCurrentIdentityFilter(identity);
+  }, []);
+
+  // Close the filters popover on outside click / Escape.
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const handlePointerDown = (e: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
+        setFiltersOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFiltersOpen(false);
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [filtersOpen]);
   const isMock = token?.startsWith("mock-") ?? false;
   const userInfoQuery = useUserInfo({ enabled: Boolean(token) && !isMock });
 
@@ -148,9 +189,41 @@ export default function HomePage() {
     setSearchQuery("");
   }, []);
 
-  const handleTagFilterChange = useCallback((filter: string | null) => {
-    setCurrentTagFilter(filter);
-  }, []);
+  // Updates a filter's state and its query param together, preserving the
+  // other filter's param. Passing null clears that param from the URL.
+  const applyFilter = useCallback(
+    (kind: "tag" | "identity", value: string | null) => {
+      if (kind === "tag") setCurrentTagFilter(value);
+      else setCurrentIdentityFilter(value);
+
+      const params = new URLSearchParams(window.location.search);
+      if (value) params.set(kind, value);
+      else params.delete(kind);
+      const query = params.toString();
+      router.replace(query ? `/?${query}` : "/", { scroll: false });
+    },
+    [router],
+  );
+
+  const toggleTagFilter = useCallback(
+    (tag: string) => {
+      applyFilter("tag", currentTagFilter === tag ? null : tag);
+    },
+    [applyFilter, currentTagFilter],
+  );
+
+  const toggleIdentityFilter = useCallback(
+    (identity: string) => {
+      applyFilter("identity", currentIdentityFilter === identity ? null : identity);
+    },
+    [applyFilter, currentIdentityFilter],
+  );
+
+  const clearAllFilters = useCallback(() => {
+    setCurrentTagFilter(null);
+    setCurrentIdentityFilter(null);
+    router.replace("/", { scroll: false });
+  }, [router]);
 
   const toggleMenu = useCallback(() => {
     setMenuOpen((prev) => !prev);
@@ -180,8 +253,13 @@ export default function HomePage() {
       }
     }
 
+    // Apply identity/pride filter
+    if (currentIdentityFilter) {
+      filtered = filtered.filter((member) => member.pride?.includes(currentIdentityFilter));
+    }
+
     setFilteredMembers(filtered);
-  }, [members, searchQuery, currentTagFilter]);
+  }, [members, searchQuery, currentTagFilter, currentIdentityFilter]);
 
   // Check if a member is currently fronting
   const isMemberFronting = useCallback(
@@ -452,9 +530,17 @@ export default function HomePage() {
                               {[...member.tags]
                                 .sort((a, b) => a.localeCompare(b))
                                 .map((tag, tagIndex) => (
-                                  <span key={tagIndex} className={s.tagChip}>
+                                  <button
+                                    key={tagIndex}
+                                    type="button"
+                                    onClick={() => toggleTagFilter(tag)}
+                                    className={cn(
+                                      s.tagChipButton,
+                                      currentTagFilter === tag && s.tagChipButtonActive,
+                                    )}
+                                  >
                                     {tag}
-                                  </span>
+                                  </button>
                                 ))}
                             </div>
                           )}
@@ -481,30 +567,129 @@ export default function HomePage() {
             {/* Search and Filter */}
             <div className={s.filtersBlock}>
               <div className={s.filterRow}>
-                <button
-                  onClick={() => handleTagFilterChange(null)}
-                  className={cn(site.filterButton, currentTagFilter === null && site.filterButtonActive)}
-                >
-                  All Members
-                </button>
-                {availableTags.map((tag) => (
+                <div className={s.filtersWrap} ref={filtersRef}>
                   <button
-                    key={tag}
-                    onClick={() => handleTagFilterChange(tag)}
-                    className={cn(site.filterButton, currentTagFilter === tag && site.filterButtonActive)}
+                    onClick={() => setFiltersOpen((prev) => !prev)}
+                    className={cn(s.filtersButton, filtersOpen && s.filtersButtonActive)}
+                    aria-expanded={filtersOpen}
                   >
-                    {tag}
+                    Filters
+                    {activeFilterCount > 0 && (
+                      <span className={s.filtersCount}>{activeFilterCount}</span>
+                    )}
+                    <span aria-hidden>{filtersOpen ? "▴" : "▾"}</span>
                   </button>
-                ))}
-                <button
-                  onClick={() => handleTagFilterChange("untagged")}
-                  className={cn(
-                    site.filterButton,
-                    currentTagFilter === "untagged" && site.filterButtonActive,
+
+                  {filtersOpen && (
+                    <div className={s.filtersPanel}>
+                      <div className={s.filterGroup}>
+                        <p className={s.filterGroupLabel}>Tag</p>
+                        <div className={s.filterPillRow}>
+                          <button
+                            onClick={() => applyFilter("tag", null)}
+                            className={cn(
+                              site.filterButton,
+                              currentTagFilter === null && site.filterButtonActive,
+                            )}
+                          >
+                            All
+                          </button>
+                          {availableTags.map((tag) => (
+                            <button
+                              key={tag}
+                              onClick={() => toggleTagFilter(tag)}
+                              className={cn(
+                                site.filterButton,
+                                currentTagFilter === tag && site.filterButtonActive,
+                              )}
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                          <button
+                            onClick={() => toggleTagFilter("untagged")}
+                            className={cn(
+                              site.filterButton,
+                              currentTagFilter === "untagged" && site.filterButtonActive,
+                            )}
+                          >
+                            Untagged
+                          </button>
+                        </div>
+                      </div>
+
+                      {availableIdentities.length > 0 && (
+                        <div className={s.filterGroup}>
+                          <p className={s.filterGroupLabel}>Identity</p>
+                          <div className={s.filterPillRow}>
+                            <button
+                              onClick={() => applyFilter("identity", null)}
+                              className={cn(
+                                site.filterButton,
+                                currentIdentityFilter === null && site.filterButtonActive,
+                              )}
+                            >
+                              All
+                            </button>
+                            {availableIdentities.map((identity) => {
+                              const flag = findPrideFlag(identity);
+                              return (
+                                <button
+                                  key={identity}
+                                  onClick={() => toggleIdentityFilter(identity)}
+                                  className={cn(
+                                    site.filterButton,
+                                    currentIdentityFilter === identity && site.filterButtonActive,
+                                  )}
+                                >
+                                  {flag && (
+                                    <span
+                                      aria-hidden
+                                      className={s.flagSwatch}
+                                      style={{ background: prideSwatchGradient(flag.stripes) }}
+                                    />
+                                  )}
+                                  {identity}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
-                >
-                  Untagged
-                </button>
+                </div>
+
+                {activeFilterCount > 0 && (
+                  <div className={s.activeFiltersRow}>
+                    {currentTagFilter && (
+                      <span className={s.activeChip}>
+                        <span className={s.activeChipKey}>tag:</span>
+                        {currentTagFilter}
+                        <button
+                          onClick={() => applyFilter("tag", null)}
+                          className={s.activeChipRemove}
+                          aria-label="Clear tag filter"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    )}
+                    {currentIdentityFilter && (
+                      <span className={s.activeChip}>
+                        <span className={s.activeChipKey}>identity:</span>
+                        {currentIdentityFilter}
+                        <button
+                          onClick={() => applyFilter("identity", null)}
+                          className={s.activeChipRemove}
+                          aria-label="Clear identity filter"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className={site.searchContainer}>
@@ -596,7 +781,30 @@ export default function HomePage() {
                                 .sort((a, b) => a.localeCompare(b))
                                 .slice(0, 2)
                                 .map((tag, index) => (
-                                  <span key={index} className={s.tagChip}>
+                                  // Nested inside the card's profile <Link>, so this is a
+                                  // <span role="button"> rather than a real <button> —
+                                  // stopPropagation keeps the click from also navigating.
+                                  <span
+                                    key={index}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      toggleTagFilter(tag);
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleTagFilter(tag);
+                                      }
+                                    }}
+                                    className={cn(
+                                      s.tagChipButton,
+                                      currentTagFilter === tag && s.tagChipButtonActive,
+                                    )}
+                                  >
                                     {tag}
                                   </span>
                                 ))}
@@ -626,20 +834,20 @@ export default function HomePage() {
             ) : (
               <div className={s.emptyState}>
                 <p className={s.emptyText}>
-                  {searchQuery || currentTagFilter
+                  {searchQuery || activeFilterCount > 0
                     ? "No members found matching your criteria."
                     : "No members available."}
                 </p>
-                {(searchQuery || currentTagFilter) && (
+                {(searchQuery || activeFilterCount > 0) && (
                   <div className={s.emptyActions}>
                     {searchQuery && (
                       <Button variant="secondary" size="sm" onClick={clearSearch}>
                         Clear search
                       </Button>
                     )}
-                    {currentTagFilter && (
-                      <Button variant="secondary" size="sm" onClick={() => setCurrentTagFilter(null)}>
-                        Clear filter
+                    {activeFilterCount > 0 && (
+                      <Button variant="secondary" size="sm" onClick={clearAllFilters}>
+                        Clear filters
                       </Button>
                     )}
                   </div>

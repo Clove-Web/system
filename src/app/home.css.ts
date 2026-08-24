@@ -521,6 +521,171 @@ export const filterRow = style({
   flexWrap: "wrap",
   gap: "0.5rem",
   justifyContent: "center",
+  alignItems: "center",
+});
+
+/* Clickable tag chips — same look as tagChip, but interactive. Used both on
+   member cards (click to filter by that tag) and inside the filters panel. */
+export const tagChipButton = style([
+  tagChip,
+  {
+    cursor: "pointer",
+    transition: "background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease",
+    ":hover": {
+      backgroundColor: vars.accent,
+      color: vars.bg,
+      borderColor: vars.accent,
+    },
+    ":focus-visible": {
+      outline: `2px solid ${vars.accent}`,
+      outlineOffset: "2px",
+    },
+  },
+]);
+
+export const tagChipButtonActive = style({
+  backgroundColor: `${vars.accent} !important` as unknown as string,
+  color: `${vars.bg} !important` as unknown as string,
+  borderColor: vars.accent,
+});
+
+/* Filters popover — single "Filters" trigger grouping the tag + identity
+   pickers, replacing the old flat button row. */
+export const filtersWrap = style({
+  position: "relative",
+  display: "inline-block",
+});
+
+export const filtersButton = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.55rem",
+  fontFamily: vars.fontComic,
+  fontWeight: 700,
+  fontSize: "0.75rem",
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
+  cursor: "pointer",
+  border: `1px solid ${vars.surfaceHigher}`,
+  backgroundColor: vars.surface,
+  color: vars.textSoft,
+  padding: "0.625rem 1.05rem",
+  borderRadius: 0,
+  transition: "background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease",
+  ":hover": {
+    backgroundColor: vars.surfaceHi,
+    color: vars.text,
+    borderColor: vars.accent,
+  },
+});
+
+export const filtersButtonActive = style({
+  backgroundColor: vars.accent,
+  color: vars.bg,
+  borderColor: vars.accent,
+  ":hover": {
+    backgroundColor: vars.accentAlt,
+    color: vars.bg,
+    borderColor: vars.accentAlt,
+  },
+});
+
+export const filtersCount = style({
+  fontSize: "0.6875rem",
+  fontWeight: 700,
+  padding: "0.05rem 0.4rem",
+  backgroundColor: vars.bg,
+  color: vars.accent,
+});
+
+export const filtersPanel = style({
+  position: "absolute",
+  top: "calc(100% + 8px)",
+  left: 0,
+  width: "21rem",
+  maxWidth: "calc(100vw - 2rem)",
+  backgroundColor: vars.bgRaised,
+  border: `1px solid ${vars.accent}`,
+  boxShadow: "5px 5px 0 rgba(0, 0, 0, 0.4)",
+  padding: "1.1rem",
+  zIndex: 30,
+  "@media": {
+    "screen and (max-width: 640px)": {
+      left: "50%",
+      transform: "translateX(-50%)",
+    },
+  },
+});
+
+export const filterGroupLabel = style({
+  fontSize: "0.6875rem",
+  fontWeight: 700,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  color: vars.textDim,
+  margin: "0 0 0.55rem",
+  fontFamily: vars.fontComic,
+});
+
+export const filterGroup = style({
+  selectors: {
+    "& + &": {
+      marginTop: "1.1rem",
+    },
+  },
+});
+
+export const filterPillRow = style({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "0.4rem",
+});
+
+export const activeFiltersRow = style({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "0.5rem",
+});
+
+export const activeChip = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.4rem",
+  fontFamily: vars.fontComic,
+  fontSize: "0.6875rem",
+  fontWeight: 600,
+  backgroundColor: vars.surface,
+  border: `1px solid ${vars.surfaceHigher}`,
+  color: vars.textSoft,
+  padding: "0.3rem 0.35rem 0.3rem 0.6rem",
+  borderRadius: 0,
+});
+
+export const activeChipKey = style({
+  color: vars.accent,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  fontSize: "0.625rem",
+  letterSpacing: "0.03em",
+});
+
+export const activeChipRemove = style({
+  all: "unset",
+  cursor: "pointer",
+  color: vars.textDim,
+  padding: "0 0.2rem",
+  lineHeight: 1,
+  ":hover": { color: vars.text },
+});
+
+export const flagSwatch = style({
+  display: "inline-block",
+  width: "0.75rem",
+  height: "0.75rem",
+  border: "1px solid rgba(0, 0, 0, 0.4)",
+  marginRight: "0.4rem",
+  verticalAlign: "-1px",
+  flexShrink: 0,
 });
 
 export const searchRelative = style({ position: "relative" });

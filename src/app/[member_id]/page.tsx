@@ -181,22 +181,23 @@ export default function MemberDetails() {
                 </h3>
                 <div className={s.tagRow}>
                   {member.tags.map((tag, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      style={
-                        memberColor
-                          ? {
-                            backgroundColor: `${memberColor}20`,
-                            borderColor: memberColor,
-                            color: memberColor,
-                            borderWidth: "1px",
-                          }
-                          : undefined
-                      }
-                    >
-                      {tag}
-                    </Badge>
+                    <Link key={index} href={`/?tag=${encodeURIComponent(tag)}`} className={s.tagLink}>
+                      <Badge
+                        variant="secondary"
+                        style={
+                          memberColor
+                            ? {
+                              backgroundColor: `${memberColor}20`,
+                              borderColor: memberColor,
+                              color: memberColor,
+                              borderWidth: "1px",
+                            }
+                            : undefined
+                        }
+                      >
+                        {tag}
+                      </Badge>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -217,22 +218,28 @@ export default function MemberDetails() {
                       ? prideSwatchGradient(flag.stripes)
                       : "var(--accent)";
                     return (
-                      <Badge key={identity} variant="secondary">
-                        <span
-                          aria-hidden
-                          style={{
-                            display: "inline-block",
-                            width: "0.8rem",
-                            height: "0.8rem",
-                            borderRadius: 0,
-                            marginRight: "0.4rem",
-                            verticalAlign: "middle",
-                            background: swatch,
-                            border: "1px solid rgba(0,0,0,0.35)",
-                          }}
-                        />
-                        {identity}
-                      </Badge>
+                      <Link
+                        key={identity}
+                        href={`/?identity=${encodeURIComponent(identity)}`}
+                        className={s.tagLink}
+                      >
+                        <Badge variant="secondary">
+                          <span
+                            aria-hidden
+                            style={{
+                              display: "inline-block",
+                              width: "0.8rem",
+                              height: "0.8rem",
+                              borderRadius: 0,
+                              marginRight: "0.4rem",
+                              verticalAlign: "middle",
+                              background: swatch,
+                              border: "1px solid rgba(0,0,0,0.35)",
+                            }}
+                          />
+                          {identity}
+                        </Badge>
+                      </Link>
                     );
                   })}
                 </div>

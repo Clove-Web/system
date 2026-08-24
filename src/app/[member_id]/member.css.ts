@@ -132,6 +132,19 @@ export const tagRow = style({
   gap: "0.5rem",
 });
 
+/** Wraps a Badge so tags/pride identities link back to the filtered member
+ *  directory (/?tag=... or /?identity=...) without the Badge itself needing
+ *  to know about navigation. */
+export const tagLink = style({
+  textDecoration: "none",
+  transition: "opacity 0.15s ease",
+  ":hover": { opacity: 0.75 },
+  ":focus-visible": {
+    outline: `2px solid ${vars.accent}`,
+    outlineOffset: "2px",
+  },
+});
+
 export const backWrap = style({
   textAlign: "center",
   paddingTop: "1rem",
