@@ -30,7 +30,6 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { useDoughminationClient } from "@doughmination/react-api";
 import * as s from "./metrics.css";
 
@@ -111,18 +110,12 @@ const Metrics: React.FC = () => {
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      // Public page: signed-out visitors fetch without a token, logged-in ones
+      // still send theirs.
       const token = localStorage.getItem("token");
-      if (!token) {
-        setMessage({
-          type: "error",
-          content: "Authentication required"
-        });
-        setLoading(false);
-        return;
-      }
 
       try {
-        const headers = { Authorization: `Bearer ${token}` };
+        const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
         const [frontingRes, switchRes] = await Promise.all([
           fetch(`${client.baseUrl}/plural/metrics/fronting-time?days=30`, { headers }),
           fetch(`${client.baseUrl}/plural/metrics/switch-frequency?days=30`, { headers }),
@@ -131,6 +124,11 @@ const Metrics: React.FC = () => {
         if (frontingRes.ok && switchRes.ok) {
           setFrontingMetrics(await frontingRes.json());
           setSwitchMetrics(await switchRes.json());
+        } else if (frontingRes.status === 401 || switchRes.status === 401) {
+          setMessage({
+            type: "error",
+            content: "Metrics are not available publicly yet",
+          });
         } else {
           setMessage({
             type: "error",
@@ -463,9 +461,5 @@ const Metrics: React.FC = () => {
 };
 
 export default function MetricsPage() {
-  return (
-    <ProtectedRoute>
-      <Metrics />
-    </ProtectedRoute>
-  );
+  return <Metrics />;
 }

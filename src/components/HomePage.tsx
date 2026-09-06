@@ -330,6 +330,9 @@ export default function HomePage() {
                 </span>
               </div>
             )}
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/user/metrics">Metrics</Link>
+            </Button>
             {loggedIn ? (
               <>
                 {isOwner && (
@@ -342,9 +345,6 @@ export default function HomePage() {
                     <Link href="/admin/dash">Admin Panel</Link>
                   </Button>
                 )}
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/user/metrics">Metrics</Link>
-                </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/user/profile">Profile</Link>
                 </Button>
@@ -389,6 +389,11 @@ export default function HomePage() {
                     </span>
                   </li>
                 )}
+                <li>
+                  <Link href="/user/metrics" className={s.mobileLink} onClick={toggleMenu}>
+                    Metrics
+                  </Link>
+                </li>
                 {loggedIn ? (
                   <>
                     {isOwner && (
@@ -405,11 +410,6 @@ export default function HomePage() {
                         </Link>
                       </li>
                     )}
-                    <li>
-                      <Link href="/user/metrics" className={s.mobileLink} onClick={toggleMenu}>
-                        Metrics
-                      </Link>
-                    </li>
                     <li>
                       <Link href="/user/profile" className={s.mobileLink} onClick={toggleMenu}>
                         Profile
